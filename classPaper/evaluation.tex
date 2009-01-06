@@ -1,0 +1,114 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+We have performed experiments both on MicaZ sensors that are part of Motelab, a 38 node
+cluster of MicaZ sensors deployed in the Harvard Computer Science building,
+as well as performed a variety of simulations on TOSSIM, a TinyOS mote simulator~\cite{hill00}.
+
+\subsection{TOSSIM}
+There are several aspects of TOSSIM that make it an unrealistic testbed for
+our algorithm which we want the reader to be aware of.
+TOSSIM's bit-level radio stack is based on the RFM1000 chip 
+which is completely different from the CC2420 in the MicaZ sensors on motelab. 
+Thus TOSSIM's radio model is unrealistic for our purposes, 
+and furthermore does not currently capture clock skew.  
+Additionally, TOSSIM does not model processor time well: 
+computation always takes zero time, regardless of the number of instructions, 
+and interrupts are instantaneous.
+On the the other hand, TOSSIM allows convenient,
+direct experimentatation by allowing the user to specify arbitrary topologies, 
+and scales to thousands of nodes. Additionally TOSSIM allows addition of user
+defined \emph{printfs} to the code which makes debugging a lot simpler
+than it is on Motelab.  
+
+In spite of TOSSIM's limitation as a realistic testbed, we choose to 
+devote a large part of our evaluation to TOSSIM experiments because it
+allows convenient exploration of the parameter space of FICA, our
+firefly-based synchronicity scheme. One of our underlying goals is to
+throughly explore our synchronicity scheme's parameter space and 
+ensure that it is accurate in an ideal testing environment such as TOSSIM.
+This will portend well for the effectiveness of our scheme on Motelab, where
+testing and debugging is laborious.  It should be noted that attempts to
+build clock skew into TOSSIM are currently underway. \\
+
+\subsection{Evaluation Criteria}
+\noindent
+We focus on two main criteria for evaluating the level of synchronicity achieved:
+\begin{enumerate}\addtolength{\itemsep}{-0.5\baselineskip}
+\item What is the time taken to achieve synchronicity amongst a group of nodes?
+\item How stable is the level of synchronicity achieved?
+\end{enumerate}
+
+We define a \emph{period} as the time between firings of two nodes.
+For a group of nodes, a period is defined as the time between firings of the
+members of that group, where the firings are computed as the
+average of the individual mote firings of the group members.
+We classify \emph{stability} in terms of consistency of membership 
+in a group of sychronized nodes, as well as the consistency of 
+the period of the nodes in that group. 
+A single group of nodes with a constant number of members, and with a 
+regular period, characterizes effective synchronicity. \\
+
+\noindent
+{\bf Detecting Groups of Synchronized Nodes} \\
+Initial experiments on TOSSIM indicate the possibility
+of nodes splitting into separate groups of synchronized entities.
+Therefore we have designed our metrics to process data for 
+more than one group of synchronized nodes.
+
+In order to detect groups, we have adopted a moving window approach.
+In this approach nodes that consistently remain coupled within a certain time period
+are grouped together. Given a fixed user-defined window size, the algorithm
+finds the best set of motes that fire within that window and 
+identifies them as one group. 
+This window \emph{moves} over time, and as more firing events are detected, 
+group membership is updated.
+This is a fairly complex algorithm, and difficult to implement correctly.
+Due to space constraints, we do not provide any further details,
+and encourage the reader to look at our code repository for a detailed
+description of the algorithm.
+
+\subsection{Evaluation Metrics}
+We defined the following metrics to evaluate synchronicity in our experiments:
+
+\begin{enumerate}
+
+\item {\bf Group Period}: This measures the length of the period between
+which nodes in a group fire.  It is particularly useful to see how the
+group period varies with time. Significant variation in a synchronized 
+group's period over time will prevent time from advancing uniformly, and
+hinders the use of synchronicity for serving as a time synchronization
+scheme.
+
+\item {\bf Group Spread}: This measures the extent of variation of 
+firing of individual nodes in a group.  This metric captures the precision
+of the synchronicity achieved by the nodes.
+The standard deviation of the various firing times of the members of group
+provides an estimate of how far apart their firing times are.
+
+\item {\bf Time to Achieve Synchronicity}: This measures the 
+amount of time it takes for all the nodes in a group to fire 
+simultaneously. This metric captures the speed at which synchronicity
+is achieved and thus reflects to some extent on the efficiciency of 
+our scheme.  Achieving fast synchronicity is crucial for the aforementioned
+applicatons in sensor nodes such as power scheduling and coordinated 
+data collection.  Whether synchronicity is achieved at all is implicit
+in this measure.
+This metric is computed by measuring the amount of time taken by 
+a certain percentage of motes to form a group and remain in that group
+for a certain number of periods.
+
+\item {\bf Group Membership: Nodes entering and exiting}: 
+For debugging purposes, it is important to be able to examine 
+the membership of individual nodes in a group, and be able to detect whether
+group members are being lost, or whether random group members are being
+deleted or whether duplicate group members exist.
+We use this metric as a means of debugging our 
+synchronicity implementation. For a given experiment, this metric
+provides a reliable means of determining and verifying 
+the quality of group membership.  
+\end{enumerate}
+
+\input{experiments}
+
+

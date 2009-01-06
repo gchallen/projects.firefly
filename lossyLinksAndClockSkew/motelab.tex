@@ -1,0 +1,37 @@
+\subsection{Simulations with Motelab topology}
+
+We also looked at the performance of FITS in the simulator on the Motelab topology used in ~\ref{}.
+The link loss values for the \emph{.nss} file for the simulation are taken from values measured on the actual
+motelab testbed. 
+Each link in this topology is at least 80\%functional, i.e. less than 20\% lossy, and there
+are 29 nodes in this simulation, 4 of which are not connected to the remaining 25. 
+These disconnected nodes are ignored. Given the low loss rates on the links, and our results in 
+Fig~\ref{fig:linkloss0.1} where the loss on any link is at most 90\%, one could predict that
+the motelab topology will definitely allow the nodes to converge to synchrony and that the time
+to sync and group spread should not be much higher than if all the links in the topology were perfect.
+
+In Table~\ref{table:motelab}
+we compare the time to sync and group spreads obtained with running FITS on the actual testbed motelab
+topology with FITS on the motelab topology in simulation.  
+
+\begin{table}[t]
+\begin{center}
+\begin{tabular}{|c|c|c|c|c|c|c|} \hline
+Environment            &  FF Constant   & TTS (sec) & GS-50 (micros) & GS-90 (micros) \\ \hline \hline
+Actual Motelab Testbed &  100           & 284.3     & 131.0          & 4664.0  \\
+Simulation             &  100           &  44.4     & 2875.4         & 4490.9  \\ \hline \hline
+Actual Motelab Testbed &  250           & 343.6     & 128.0          & 3605.0  \\
+Simulation             &  250           &  70.3     & 2850.0         & 4432.0  \\ \hline \hline
+Actual Motelab Testbed &  500           & 678.1     & 154.0          & 30236.0  \\
+Simulation             &  500           &  77.7     & 3099.0         & 4660.0  \\ \hline \hline
+Actual Motelab Testbed &  1000          &  1164.4   & 132.0          & 193.0  \\
+Simulation             &  1000          &  138.69   & 3468.0         & 4740.9  \\ \hline \hline
+\end{tabular}
+\end{center}
+\caption{{\it Metric results for motelab topology in actual testbed compared with motelab topology in simulation. In simulation, the system converges much faster, but both the 50th percentile and 90th percentile group spreads are much larger.}}
+\label{table:motelab}
+\end{table}
+
+Table~\ref{table:motelab} shows that the time to sync of the experiments in the simulated motelab topology
+is much lower than that of the actual testbed deployment.  This could be because in simulation there are no
+unpredictable message delays and clock skew effects.  Furthermore, the group spread of the 

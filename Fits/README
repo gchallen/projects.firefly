@@ -1,0 +1,57 @@
+
+Algorithms still to work on:
+----------------------------
+. FITS on multihop
+. Fix FITS bugs on real motes.
+
+
+Running for TOSSIM:
+---------------------
+
+Example on a 4x4 grid fixed topology:
+
+(be on bash)
+
+make pc
+export DBG=usr1 (Output only relevant messages)
+build/pc/main.exe -rf=../tools/topGen/grid4.4.nss 16 > ../data/gt-15-Dec-2004-1/14-Dec-2004-MOTE-16.out
+
+Processing and Graphing the Output
+----------------------------------
+Here is a scenario:
+
+tools/convertTOSSIM.pl in.file out.file
+tools/processEvents.pl out.file
+
+%% This creates one file per mode for the simulation: SQ#, Time, DIFF)
+%% The file format is as follows: <datafileroot>-EVENT-MOTE
+
+gnuplot
+plot 'out.file' u 2:3   (This means plot using columns Time on x-axis and Diff on y-axis)
+set yrange[0:5000000]
+replot
+
+On each of the mote files:
+
+find -name "EVENT*" -exec tools/fitData.pl {} 0 1 \;
+
+%% {} means use the filename one by one provided by executing fitData.pl
+%% 0 1 specify column numbers where indices start at 0
+%% Output is in a file by: slope y-intercept
+
+Now process a bunch of these files together:
+
+tools/processEvents.pl out.file EVENT-MOTE-ALL
+
+%% This should output MoteID SeqNum Time
+
+gnuplot
+plot EVENT-MOTE-ALL u 3 1
+set yrange[-15:30]
+set xrange[0:1]
+plot EVENT-MOTE-ALL u 3 1 w impulses;
+
+%% Finally, you may just want to sort the data.
+
+sort -n -k 3,3 out.file > out2.file
+

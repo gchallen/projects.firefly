@@ -1,0 +1,24 @@
+
+
+15-Dec-2004
+------------
+
+Current Experiments
+-------------------
+. Changed and copied TOSSIM code to bind to three differnt ports
+. Vary FiringFunction constant (k): 
+  15 nodes, fully-connected topologies 
+  For the sake of context, k = 1/epsilon
+
+. Vary the number of nodes
+
+. Change the "ignore packets received" interval.
+
+. Grid, Line, Ring topologies.
+
+Hypothesis
+----------
+. FFC is influenced by number of nodes.
+. Varying the ignore interval should not be too much work if correct
+  ignore interval is selected.
+

@@ -1,0 +1,361 @@
+\documentclass[8pt,twocolumn]{article}
+\usepackage{ieee}
+\usepackage{times}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{listings}
+\usepackage{relsize}
+\usepackage{color}
+\newcommand{\ignore}[1]{}
+\newcommand{\boldheading}[1]{{\vspace{0.1in}\noindent \bf #1} \hspace{0.06in}}
+\newcommand{\otherheading}[1]{{\noindent \bf #1} \hspace{0.06in}}
+
+\begin{document}
+\title{Biologically Inspired Time Synchronization in Wireless Sensor Networks}
+\author{ Uri Braun, Geetika Tewari, Geoffrey Werner-Allen\\ 
+CS 263/266 Project Proposal\\
+\{uribraun, gtewari, werner\}@eecs.harvard.edu }
+\maketitle
+
+\begin{abstract} 
+
+Many wireless sensor network applications require time
+synchronization for coordination, data logging, or event detection
+purposes.
+Providing this synchronization is challenging in the face of limited node
+resources and communication bandwidth, node crystal frequency variations, and
+lossy communication links across multi-hop networks.
+Existing approaches are variants of approaches originally designed to work
+well on far less constrained systems.
+
+We propose to develop and evaluate Firefly
+Inspired Time Synchronization (FITS), a protocol for distributed time
+synchronization based on the pulse-coupled integrate-and-fire model
+embedded in biological swarms.  Since FITS has evolved to work well on
+multi-hop networks utilizing only local interactions, we think that it is a
+promising approach to take to time synchronization in wireless sensor
+networks. 
+%The method is based on a simple transmission strategy where nodes integrate
+%the coupling caused by the signal pulses received from other nodes, and fire
+%a pulse after reaching a designated threshold. 
+The requirements in designing such a protocol entail
+that it should utilize low communication bandwidth, scale well for multi-hop
+networks, and remain robust against topolgy changes and node failures.  We
+intend to evaluate the performance of our protocol on the MicaZ
+platform, using both TOSSIM -the TinyOS mote simulator, and Motelab, a
+38~node sensor cluster deployed in Maxwell Dworkin.  We will evaluate its
+performance in terms of power and bandwidth consumption and compare it with
+Reference Broadcast Synchronization (RBS), an existing and commonly deployed
+protocol for synchronization in wireless sensor networks.
+%While there is significant previous work on time synchronization schemes in
+%wireless sensor networks, and some work on pulse-coupled oscillating system
+%based time synchronization schemes, 
+To our knowledge this work is the only attempt at designing and
+evaluating a pulse-coupled oscillator based time synchronization
+protocol on the MicaZ platform.  \end{abstract}
+
+
+\section{Introduction}
+
+Advances in micro electro-mechanical systems (MEMS) technology in digital
+circuit development, and in wireless communications are leading to smaller,
+cheaper and lower power sensing and computing devices.  Radically new systems
+are emerging that consist of thousands or even millions of tiny computing
+devices interacting with the environment and communicating with each other.
+The Mica2 mote and its descendants are current examples of research platforms
+of this technology. Complex networks built from thousands of such devices are
+expected to affect many aspects of our lives.  Some potential applications
+include environmental monitoring, measuring continuously changing conditions
+in a mobile commerce setting, smart office environment, and various tasks in
+military tracking such as surveillance, target tracking, counter-sniper
+systems or battlefield monitoring that propagates information to soldiers and
+vehicles involved in combat.
+
+Time synchronization in wireless sensor neworks is crucial in many
+operations.  Time synchronization helps to keep data consistent by resolving
+redundunt detection of the same event, it supports coordination and
+communication, for example TDMA radio scheduling, and underpins common
+services in distributed systems such as cryptography schemes, database
+queries or distributed logging for debugging.  
+
+Synchronization has been observed in large biological swarms where
+individuals apply quite simple transmission strategies. The canonical example
+is the synchronization of fireflies observed in certain parts of southeast
+Asia~\cite{ms90}.  The behavior of these systems can be modelled as a network
+of pulse-coupled oscillators where each oscillator emits periodically a
+self-generated pulse which will cause a coupling upon the pulsing time of
+other oscillators. Mirolla and Strogatz~\cite{ms90} were one of the first to
+study this model and proved the synchronization of a network of pulse-coupled
+oscillators under the assumption of uniform coupling and no propagation
+delay.  The simplicity of this model, and parallel between the limited
+capabilities of fireflies and wireless sensors, provides excellent motivation
+for investigating a pulse-coupled oscillatory system based time
+synchronization scheme.
+
+\section{Background and Related Work}
+
+Traditional time synchronization methods are ill suited in the framework of
+wireless sensor networks and considerable attention has focussed on
+developing more appropriate approaches.  Elson et al. identify the
+requirements of an effective time synchronization protocol in the context of
+wireless sensor networks as including energy efficiency, scalablility,
+robustness and ad hoc deployment~\cite{wsn02}. They then propose design
+principles for such schemes such as: use multiple tunable modes of
+synchronization; do not maintain a global timescale for the entire network;
+use post facto synchronization; adapt to application and exploit domain
+knowledge.
+
+The most widely adapted protocol used in the internet domain is the Network
+Time Protocol (NTP) developed by Mills~\cite{mills94}.  NTP clients
+synchronize their clocks to the NTP time servers with the accuracy in the
+order of milliseconds. The time servers are synchronized by the external time
+sources typically using GPS. While NTP has been proven to be effective in the
+Internet, it is not well suited to sensor networks because of high message
+overhead and its inability to adapt to topology change.
+
+\subsection{Time Synchronization Protocols for Wireless Sensor Networks}
+
+Three prominent examples of existing time synchronization protocols developed
+for WSN are Reference Broadcast Synchronization (RBS)~\cite{rbs02},
+Timing-sync Protocol for Sensor Networks (TPSN)~\cite{tpsn03} and Flooding
+Time Synchronizing Protocol (FTSP)~\cite{ftsp04}. 
+
+In RBS, a reference message is broadcasted at regular intervals.  The
+receivers record their local time when receiving the reference broadcast and
+exchange the recorded times with each other. While RBS has the advantage of
+eliminating transmitter-side nondeterminism, it requires additional message
+exchange to communicate the local time-stamps between nodes.  Karp et
+al.~\cite{ogts03} extend RBS by introducing a model of the fundamental RBS
+scheme that treats clock offset and clock skew on different scales. While
+they provide a theoretical model for further refining RBS, it is not clear
+whether it has any practical significance.
+%Within the context of this model they derive the optimally precise and
+%globally consistent time synchronization scheme.  Their approach can be used
+%with any synchronization scheme that produces pairwise synchronization with
+%independent errors.
+
+TPSN~\cite{tpsn03} creates a hierarchical structure in the network and
+coordinates pair-wise synchronization along the edges of the structure.  Each
+node gets synchronized by exchanging two synchronization messages with its
+reference node one level higher in the hierarchy. While the TPSN achieves two
+times better performance than RBS by time-stamping the radio messages in the
+Medium Access Control (MAC) layer of the radio stack, it fails to estimate
+clock drift of nodes, which limits it's accuracy. Furthermore, it doesn't
+support dynamic topology changes.
+
+FTSP~\cite{ftsp04} utilizes periodic radio broadcast of synchronization
+messages and implicit dynamic topology update. It achieves high precision
+performance by using MAC-layer time-stamping, comprehensive error
+compensation, including linear regression, which reduces time skew and keeps
+network traffic overhead low.
+
+In addition to the aforementioned, several other approaches exist.
+Romer~\cite{tsan01} proposed a time synchronization scheme for sparse ad hoc
+networks.  The basic idea of the algorithm is to generate time stamps using
+unsynchronized local clocks, pass them between devices, and transform them to
+the local time of the receiving device. The algorithm determines lower and
+upper bounds for the real-time passed from generation of the time stamp in
+the source node to arrival of the message in the destination node. It then
+transforms these bounds to the time of the receiver and subtracts the
+resulting values from the time of arrival in the destination node.  The
+resulting interval specifies lower and upper bounds for the time stamp
+relative to the local time of the receiving node.  A problematic aspect of
+the algorithm is minimizing the amount of error in the interval.
+
+On a theoretical note, Hu et al.~\cite{aots03} consider the time
+synchronization problem under the assumption of asymptotic high node density
+and vanishing per node power.  An interesting feature of their method is that
+nodes collaborate to generate an aggregate waveform that can be observed
+simultaneously by all nodes and that contains enough information to
+synchronize all clocks.
+
+\subsection{Pulse-Coupled Oscillator based Synchronization}
+
+The idea of designing a time synchronization algorithm for WSNs inspired by
+the synchrony observed in biological swarms has been explored in the past.
+Hong et al.~\cite{ssp03, tsrbc03} introduce an adaptive distributed time
+synchronization method based on a pulse-coupled oscillating system for Ultra
+Wideband (UWB) wireless ad hoc networks.  Ultra Wideband (UWB) wireless
+devices can be used for short-range high-speed data transmissions suitable
+for broadband access to the Internet.
+%UWB radio systems typically employ pulse modulation whereby extremely narrow
+%pulses are modulated and emitted to convey or receive information. 
+The emission bandwidths generally exceed one gigahertz.  Unlike our work,
+this paper explores theoretical implications of this algorithm, and discusses
+results of simulations rather than actual deployment on a testbed of wireless
+sensors with UWB communication powers.
+
+Recently Hong et al.~\cite{smrdc02} propose a method to reach detection
+consensus in massively distributed sensor networks that uses the synchronized
+pulses of sensor nodes.
+%Initially each node makes a decision based on its local observation and
+%broadcasts the binary decision to all other nodes. Then each node updates
+%its decision based on the received information and broadcasts its decision
+%again. This process is repeated until consensus is attained. 
+The scheme is inspired by the mathematical models used to explain the
+non-linear dynamics that lead to synchrony in certain natural swarms. The
+convergence to consensus in their algorithm is guaranteed through the theory
+of Mirollo and Strogatz~\cite{ms90}.
+
+\section{Problem Statement}
+
+\emph{Our goal is to design a robust and scalable time synchronization scheme 
+based on the pulse-coupled oscillatory behavior observed in synchronized 
+fireflies for wireless sensor networks and evaluate its effectiveness 
+on a testbed of MicaZ sensor motes.} In designing 
+our algorithm, {\bf Firefly Inspired Time Synchronization (FITS)}, our goals are:
+\begin{enumerate}\addtolength{\itemsep}{-0.5\baselineskip}
+\item {\bf Topology independence} : Should handle all kinds of partitioning
+in sparse ad hoc networks.  
+\item {\bf Precision} : Ideally our algorithm will achieve the level of
+precision attained by existing time synchronization protocols and thus the
+error in time should be at most on the order of microseconds.
+\item {\bf Scalability} : Should perform equally well in MoteLab, as it does
+with four sensors.  
+\item {\bf Performance} : Low message overhead.
+\end{enumerate}
+
+\section{Research Methodology}
+
+Our project will proceed in several distinct phases.  First, we must
+understand what assumptions FITS makes that are unrealistic or unprovideable
+in practice, and how and whether we can relax or approximate these
+requirements.  Second, we will implement and test FITS using TOSSIM.  Third,
+we will use TOSSIM to explore the parameter space discover the optimal
+parameters.  Finally, we will deploy FITS on MoteLab and evaluate its
+effectiveness next to RBS.
+
+\subsection{Assumptions in the Firefly Model} The firefly synchronization
+scheme makes two main assumptions that need to be given attention when
+implementing the algorithm in sensor networks. First, it assumes that there
+is no propagation delay; second, it assumes that all the fireflies can
+hear each other simultaneously.  Obviously these assumptions do not hold in
+any wireless sensor network.
+
+We intend to address propagation delay within broadcast domains
+by inserting a $\delta$ within each pulse message sent that will contain the
+difference between the time that a message was intended to be sent and the
+time when it was actually sent.  Each sensor node will then correct for this
+time before it next fires.  In a multi-hop setting we need to design an
+effective scheme to address this potential delay since in this case the delay
+could grow to be very large.
+
+There is no good way to address the requirement of full network connectivity,
+and so this is one assumption that will have to be relaxed.  Given that in
+situ biological synchronization such as that demonstrated by fireflies cannot
+realistically rely on all-to-all communication, we are optimistic that this
+assumption can be violated without harming the efficacy of the algorithm.
+
+\subsection{Parameters to the Firefly Model} There are several parameters to
+the firefly algorithm that need to be tweaked including: the $\epsilon$
+amount moved on the concave function that represents when the firefly is
+about to fire, and the choice of this concave function. The latter should
+take into consideration that floating points are not available on the sensor
+motes.
+
+\subsection{Implementation Strategy} Initially, we intend to implement our
+time sychronization on TOSSIM, the TinyOS simulator.  This is because TOSSIM
+provides a C-like programming environment with convenient \emph{printf}-like
+debugging statements that are not available on the sensor motes.  We will
+need to modify TOSSIM to provide a realistic approximation of real
+node-to-node clock drift, and we expect to parametrize this drift to allow
+experimentation with synchronization algorithms under varying conditions.
+The TOSSIM environment will allow us to conveniently change and fine-tune our
+synchronization scheme.  On this platform we will evaluate the effectiveness
+of our scheme according to the precision of time maintained, speed at
+attaining synchronization, extent to which synchronization is attained,
+stability of time synchronization, and robustness under changing topology.
+
+Eventually we will evaluate the effectiveness of our technique in Motelab, a
+38-node cluster of MicaZ motes deployed in Maxwell Dworkin.  Since this is a
+fixed topology network, we will also obtain 5-10 motes, and experiment with
+dynamic topologies.  
+
+Evaluating power consumption and synchronization accuracy will require
+external tools.  The former will be done by using an instrumented node on
+MoteLab allowing current data to be collected at sampling rates of up to
+3500Hz.  The latter is more complicated.  Evaluating the accuracy of the time
+synchronization achieved will require two motes attached to GPS sensors
+providing a 1-sec pulse with microsecond accuracy.  One mote will be used as
+the synchronization seed and the other will allow the accuracy to be
+evaluated, since they share a common time base.
+
+\subsection{Comparison with RBS} We intend to compare our scheme with the
+Reference Broadcast Synchronization (RBS) protocol. As shown in our timeline,
+Table~\ref{table:timeline}, we intend to have working implementations of each
+of our time synchronization schemes by the first week of December, and intend
+to exchange data and conduct experiments on Motelab in the month of December.
+In order to be able to compare performance of our algorithms effectively, we
+have agreed on the following standards for experimentation:
+
+\begin{enumerate}\addtolength{\itemsep}{-0.5\baselineskip}
+\item {\bf Data logging and Results Format}
+\item {\bf Mote communication frequencies} : rates at which the sensors
+\emph{fire}, the rate of a GPS broadcast in RBS.
+\item {\bf Types of Experiments} : details of conducting experiments on
+Motelab.  
+\item {\bf Evaluation parameters} :  message overhead, power
+consumption, and multi-hop topology. 
+\end{enumerate}
+
+\begin{table*}[t]
+\begin{center}
+\smaller\smaller
+\begin{tabular}{|l|l|}
+\hline
+{\bf October 26} & Project proposal due.  \\
+\hline
+{\bf November 4} & Learn to program the Telos motes with NesC. \\
+	& Get acquainted with methods to exchange data, communicate radio messages, and log output on the motes. \\
+\hline
+{\bf November 9} & Design and implement a time synchronization scheme on Tossim.\\
+        & Hack Tossim code to tweak Medium Access Control layer delays. \\
+        & Conduct experiments implementing the time synchronization scheme, and fine-tune it. \\
+\hline
+{\bf November 23} & Extend the design to Motelab, the 38 sensor node network in Maxwell Dworkin.\\
+        & Decide changes to synchronization scheme necessary to make it multi-hop. \\
+        & Conduct experiments on Motelab, and fine-tune the multi-hop algorithm.\\
+
+\hline
+{\bf December 6} & Collect data and exchange data with Geoff Werner-Allen. \\
+	& Compare the results of our time synchronization with Geoff's implementation of RBS.\\
+        & Begin first draft of paper focusing on research methodology and implementation techqniques.\\
+\hline
+{\bf December 16} & Project presentations. \\
+	&   Report results of experimental analysis of our time sychronization scheme, and its performance in comparison with RBS. \\
+	&   Explore variants of our time synchronization scheme. \\
+	&   Determine new performance metrics for comparison. \\
+	&   Perform more experiments to compare performance. \\
+\hline
+{\bf December 30th} & Continue writing the paper focusing on results and evaluation section. \\
+	&  Continue experiments to gather more results. \\
+\hline
+{\bf January 5th} & Begin preparing for presentation. \\
+	&   Begin work on final draft of paper.\\
+\hline
+{\bf January 10th} & Submit final paper.\\
+\hline
+\end{tabular} 
+\caption{Our Research Timeline}
+\label{table:timeline}
+\end{center} 
+\end{table*} 
+
+
+\section{Research Schedule}
+We have compiled a list of intermediate deadlines for different 
+components of our project shown in Table~\ref{table:timeline}. We consider 
+our timeline to be reasonable and realistic.  After a detailed understanding of the TinyOS and TOSSIM
+codebase and programming methodology, which we intend to acquire over the next two weeks, 
+we plan to allocate individual implementation tasks between us.
+
+\section{Future Work}
+Given the limited prior art in applying biologically motivated time synchronization mechanisms
+in the context of sensor networks, we intend to make this work the basis for a 
+conference publication.
+
+\smaller
+\bibliographystyle{abbrv}
+\bibliography{proposal}
+
+\end{document}

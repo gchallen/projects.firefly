@@ -1,0 +1,117 @@
+\section{Introduction}
+\label{sec:intro}
+
+Advances in micro electro-mechanical systems technology in digital
+circuit development, and in wireless communications are leading to smaller,
+cheaper and lower power sensing and computing devices.  Radically new systems
+are emerging that consist of thousands or even millions of tiny computing
+devices interacting with the environment and communicating with each other.
+The MicaZ mote and its descendants are current examples of research platforms
+of this technology. Complex networks built from thousands of such devices are
+expected to affect many aspects of our lives.  Some potential applications
+include environmental monitoring, measuring continuously changing conditions
+in a mobile commerce setting, smart office environment, and various tasks in
+military tracking such as surveillance, target tracking, counter-sniper
+systems or battlefield monitoring that propagates information to soldiers and
+vehicles involved in combat.
+
+Synchronicity amongst nodes in a wireless sensor network can play an important
+role in many operations.  
+Synchronicity can be used for a variety of general tasks such as providing time
+synchronization, flexible power scheduling, and coordinated data logging.
+Each of these tasks have many useful applications.  For instance time synchronization
+in wireless sensor networks~\cite{rbs02,tpsn03,ftsp04}
+can be used to provide information to determine locations of shooters in 
+countersniper systems~\cite{sml04}, measure the time of flight of sound~\cite{ge01}; 
+distribute a beamforming array~\cite{wym02}; form a low power TDMA schedule~\cite{ad98}; 
+integrate a time-series of proximity detections into a velocity estimate~\cite{ce01}.
+Flexible power scheduling can allow sensor nodes to perform their routine tasks while
+reducing radio power consumption and supporting fluctuating power demand in the network~\cite{hdb04}.
+Synchronous data logging can help keep data consistent by recognizing duplicate 
+detection of the same event by different sensors~\cite{ige00}.
+Providing synchronicity in wireless sensor networks is particularly useful
+when fine time resolutions and a global clock federation, such as that provided
+by the Flooding Time Synchronization Protocol (FTSP)~\cite{ftsp04} is not needed.
+In such cases, for instance flexible power management schemes for sensor networks~\cite{hdb04},
+and sensor network platforms for environment monitoring~\cite{sb03}, synchronicity
+amongst network nodes is sufficient to fulfill the goals of the application.
+
+
+Synchronicity has been observed in large biological swarms where
+individuals apply quite simple transmission strategies. The canonical example
+is the synchrony of fireflies observed in certain parts of southeast
+Asia~\cite{ms90}.  The behavior of these systems can be modeled as a network
+of pulse-coupled oscillators where each oscillator emits periodically a
+self-generated pulse which will cause a coupling upon the pulsing time of
+other oscillators. Peskin first introduced this idea in the context of cardiac
+pacemakers~\cite{peskin75}. In the case of two oscillators, Peskin proved that the system
+approached a state in which the oscillators fire synchronously under the assuption
+that all oscillators have identical dynamics and each oscillator is coupled
+to all the others, i.e. coupled \emph{all-to-all}.
+Mirollo and Strogatz~\cite{ms90} provide one of the earliest complete
+analystical studies of pulse coupled oscillator systems. They generalize 
+Peskin's model and prove the synchronization of a network of all $N$ pulse-coupled
+oscillators while retaining Peskin's assumptions, with the requirement
+that the oscillators rise toward a threshold with a time-course which is 
+monotonic and concave down.  Other models have also been considered by
+making different assumptions on the propagagation delay and coupling
+strength of the oscillators~\cite{a90,g96}.
+The simplicity of Mirollo and Strogatz's model, and parallel between the limited
+capabilities of fireflies and sensor nodes, provides excellent motivation
+for investigating a pulse-coupled oscillatory system based synchronicity
+algorithm in wireless sensor nodes.
+
+Recent work by Lucarelli and Wang~\cite{lw04} demonstrates through proofs 
+and simulations the effectiveness of this model while relaxing 
+the all-to-all communication assumption.  Specifically, by casting the
+pulse coupled equations in Peskin's model~\cite{peskin75} as a dynamical
+system of the phase deviations, they derive a stability result based
+on nearest neighbor coupling, and show convergence via simulation results 
+with both static and time varying topologies.  Since all-to-all communication
+is near impossible to attain in sensor networks, this work has tremendous
+implications for the feasibility of implementing synchronicity using 
+a pulse coupled oscillator based model in wireless sensor networks.
+Lucarelli and Wang's work serves as our primary motivation for investigating
+a pulse coupled integtrate and fire based synchronicity algorithm for 
+sensor networks.
+
+In this paper we design and implement {\bf FICA}, Firefly Inspired Collective Action,
+a variant of Mirollo and Strogatz's synchronicity algorithm for the MicaZ 
+wireless sensor platform. 
+This method is based on a simple transmission strategy where nodes
+integrate the coupling caused by the signal pulses received from other nodes,
+and \emph{fire} a pulse, i.e. broadcast a message after reaching a designated threshold.
+To our knowledge, this paper is the first attempt at evaluating the 
+robustness of a pulse-coupled oscillator based synchronicity scheme in such 
+real-world conditions.
+Our implementation does not assume
+all-to-all communication, and is tailored to the resource constraints of a wireless sensor
+platform. 
+We implement a linearized version of a logarithmic coupling procedure that satisfies 
+the monotonicity and concavity requirements defined by Mirollo and Strogatz 
+and thus theoretically guarantees to drive the phase differences to zero, and 
+that can be computed using integer-only arithmetic.
+We evaluate this algorithm on a collection of MicaZ sensors that are part of 
+Motelab, as well as through extensive simulations on TOSSIM, the TinyOS mote simulator.
+
+
+The specific contributions of this paper are:
+\begin{itemize}\addtolength{\itemsep}{-0.5\baselineskip}
+\item The design and implementation of FICA, a synchronicity algorithm for wireles sensor nodes that is based on Mirollo and Strogatz's pulse coupled oscillator model.
+\item An evaluation of the accuracy and quality of the synchronicity attained by this algorithm when implemented in sensor nodes in both Motelab and TOSSIM.
+\end{itemize}
+
+The remainder of this paper is organized as follows. Section~\ref{sec:background} discusses
+related work on time synchronization protols. Section~\ref{sec:fits} describes the
+assumptions and intricacies of our firefly-based synchronicity algorithm, FICA,
+and provides details of our implementation of this algorithm on the MicaZ 
+wireless sensor platform. Section~\ref{sec:evaluation} describes the metrics we
+use to evaluate the accuracy and quality achieved, shows results
+of these metrics on TOSSIM and Motelab data, and discusses the circumstances
+under which synchronicity amongst different sensors is achieved, as well as its
+level of accuracy.  Section~\ref{sec:discussion} discusses some implementation
+issues we faced in implementing FICA on Motelab.
+Finally, Section~\ref{sec:conclusion} summarizes the key 
+challenges involved and conclusions resulting from this work and makes
+recommendations for future work.
+ 

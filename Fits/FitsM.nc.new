@@ -1,0 +1,888 @@
+includes FitsMsg;
+
+module FitsM {
+  provides {
+    interface StdControl;
+  } uses {
+    interface SendMsg as SendFitsMsg;
+    interface ReceiveMsg as ReceiveFitsMsg;
+#ifdef FTSPINSTRUMENT
+    interface SendMsg as SendFitsDiagMsg;
+    interface SendMsg as SendFitsInfoMsg;
+    interface SendMsg as SendFitsFiringMsg;
+    interface GlobalTime;
+    interface TimeStamping;
+    interface TimeSyncInfo;
+#endif
+
+    // 21 Feb 2005 : GWA : Mica2 doesn't require a seperate message.
+    //
+    // 23 Feb 2005 : GWA : Now MicaZ, Telos don't either.
+
+    // 11 Mar 2005 : GWA : Dumped extra packets over the side.
+
+    // 12 Dec 2004 : GWA : Adding MicroTimer for MicaZ use.  Timer component 
+    //               now for simulation only.
+#if defined(PLATFORM_PC)
+    interface Timer as FireTimer;
+#endif
+    interface Timer as ProcessDelayTimer;
+    interface Timer as SendDelayTimer;
+    interface Leds;
+#if !defined(PLATFORM_PC) || defined(TOSSIMCC2420)
+    interface RadioCoordinator as RadioSendCoordinator;
+    interface RadioCoordinator as RadioReceiveCoordinator;
+#endif
+#ifndef PLATFORM_PC
+    interface MicroTimer;
+#endif
+
+    // 23 Feb 2005 : GWA : Needed for packet level rewriting on CC2420.
+
+#if defined(PLATFORM_TELOS) || defined(PLATFORM_MICAZ) || defined(TOSSIMCC2420)
+    interface HPLCC2420RAM;
+#endif
+    interface SysTime;
+    interface FiringFunction;
+    // GT: topology conversion from .nss to motelab           
+#ifdef USE_NODECON
+    interface NodeConnectivity;
+#endif
+    interface Random;
+  }
+} implementation {
+  
+  FitsMsgT * FitsReceive_Msg;
+  TOS_Msg fitssend_msg;
+#ifdef FTSPINSTRUMENT
+  FitsDiagMsgT * FitsDiag_Msg;
+  TOS_Msg fitsdiag_msg;
+  FitsInfoMsgT * FitsInfo_Msg;
+  TOS_Msg fitsinfo_msg;
+  FitsFiringMsgT * FitsFiring_Msg;
+  TOS_Msg fitsfiring_msg;
+  uint32_t lastFTSPHeardTime;
+  bool lastFTSPSynced;
+  uint32_t nextInterval;
+#endif
+  // 11 Mar 2005 : GWA : Dumped extra packets over the side.
+
+  FitsMsgT * FitsSend_Msg;
+
+  FitsQueueT fireQueue[FITS_QUEUE_SIZE];
+  uint8_t currentQueuePosition;
+  uint8_t lastStoredIndex;
+  uint8_t firstNewIndex;
+
+  uint32_t startEpochJiffies;
+  uint32_t endEpochJiffies;
+  uint32_t oldEndEpochJiffies;
+
+  uint32_t startSendJiffies;
+
+  // 08 Dec 2004 : GWA : Ugh.  The CC2420 doesn't let us modify the packet in
+  //               the radiocoordinator interrupts.  So now we need to store
+  //               these values and transmit them in a seperate packet.
+  //               Yuck.
+  //
+  // 23 Feb 2005 : GWA : Fixed.
+
+  uint32_t lastHeardTime;
+  uint32_t lastSendTime;
+  uint32_t lastSendDelay;
+
+  // 08 Dec 2004 : GWA : Adding counter so that we can detect skips.
+
+  uint16_t seqno;
+#ifdef FTSPINSTRUMENT
+  bool synced;
+#endif
+
+  // 29 Oct 2005 : GWA : Adding period info.
+
+  int32_t FITS_EPOCH_JIFFY_LENGTH;
+
+  command result_t StdControl.init() {
+    uint8_t i;
+    for (i = 0; i < FITS_QUEUE_SIZE; i++) {
+      fireQueue[i].valid = 0;
+      fireQueue[i].arrivalTime = 0;
+      fireQueue[i].pleaseLog = 0;
+    }
+    lastStoredIndex = 0;
+    startEpochJiffies = 0;
+    atomic {
+      currentQueuePosition = 0;
+      firstNewIndex = 0;
+      endEpochJiffies = 0;
+      startSendJiffies = 0;
+      seqno = 0;
+      lastHeardTime = 0;
+      FITS_EPOCH_JIFFY_LENGTH = FITS_EPOCH_JIFFY_LENGTH;
+    }
+    FitsSend_Msg = (FitsMsgT *) fitssend_msg.data;
+#ifdef FTSPINSTRUMENT
+    FitsDiag_Msg = (FitsDiagMsgT *) fitsdiag_msg.data;
+    FitsDiag_Msg->sourceaddr = TOS_LOCAL_ADDRESS;
+    FitsInfo_Msg = (FitsInfoMsgT *) fitsinfo_msg.data;
+    FitsInfo_Msg->myaddr = TOS_LOCAL_ADDRESS;
+    FitsFiring_Msg = (FitsFiringMsgT *) fitsfiring_msg.data;
+    FitsFiring_Msg->sourceaddr = TOS_LOCAL_ADDRESS;
+    synced = 0;
+    nextInterval = 0;
+#endif
+    FitsSend_Msg->sourceaddr = TOS_LOCAL_ADDRESS;
+    
+    call Leds.init();
+    // 11 Mar 2005 : GWA : Dumped extra packets over the side.
+
+    return SUCCESS;
+  }
+
+  command result_t StdControl.start() {
+#ifdef PLATFORM_PC
+    call FireTimer.start(TIMER_ONE_SHOT, FITS_BASE_PERIOD);
+#else
+    // 05 Apr 2005 : GWA : Trying to make MoteLab runs exciting.
+
+    call MicroTimer.start(FITS_BASE_PERIOD + 
+                          (call Random.rand() % FITS_BASE_PERIOD));
+#endif
+    startEpochJiffies = call SysTime.getTime32();
+    return SUCCESS;
+  }
+
+  command result_t StdControl.stop() {
+    return SUCCESS;
+  }
+
+#ifdef FTSPINSTRUMENT
+  
+  task void firingTask() {
+    FitsFiring_Msg->nextInterval = nextInterval;
+    FitsFiring_Msg->seqno = seqno;
+    FitsFiring_Msg->myPeriod = FITS_EPOCH_JIFFY_LENGTH;
+    call SendFitsFiringMsg.send(TOS_UART_ADDR,
+                                sizeof(FitsFiringMsgT),
+                                &fitsfiring_msg);
+    return;
+  }
+  
+  event result_t SendFitsFiringMsg.sendDone(TOS_MsgPtr msg, result_t success) {
+    return SUCCESS;
+  }
+  
+  task void infoTask() {
+    uint8_t i;
+    bool didInfo = 0;
+    for (i = 0; i < FITS_QUEUE_SIZE; i++) {
+      if (fireQueue[i].pleaseLog) {
+        FitsInfo_Msg->sourceaddr = fireQueue[i].sourceaddr;
+        FitsInfo_Msg->myseqno = seqno;
+        FitsInfo_Msg->seqno = fireQueue[i].seqno;
+        FitsInfo_Msg->queueIndex = i;
+        FitsInfo_Msg->arrivalTime = fireQueue[i].arrivalTime;
+        FitsInfo_Msg->FTSPStamp = fireQueue[i].FTSPStamp;
+        FitsInfo_Msg->FTSPSynced = fireQueue[i].FTSPSynced;
+        FitsInfo_Msg->ignored = fireQueue[i].ignored;
+        FitsInfo_Msg->sentdelay = fireQueue[i].sentdelay;
+        fireQueue[i].pleaseLog = 0;
+        didInfo = 1;
+        call SendFitsInfoMsg.send(TOS_UART_ADDR,
+                                  sizeof(FitsInfoMsgT),
+                                  &fitsinfo_msg);
+        //call Leds.greenToggle();
+        break;
+      }
+    }
+    if (!didInfo) {
+      post firingTask();
+    }
+    return;
+  }
+  
+  event result_t SendFitsInfoMsg.sendDone(TOS_MsgPtr msg, result_t success) {
+    post infoTask();
+    return SUCCESS;
+  }
+#endif
+
+  task void processTask() {
+
+    // 06 Dec 2004 : GWA : TODO : Need bounds checking/wraparound through
+    //               this function.
+
+    // 06 Dec 2004 : GWA : Various variables used locally.  We need to store
+    //               several different epoch times, etc, yeah, a disaster.
+
+    uint8_t i;
+    uint8_t sortIndex;
+    uint8_t count = 0;
+    uint8_t sortCount = 0;
+    uint8_t sortElementCount = 0;
+    uint8_t numSwaps = 0;
+    uint32_t lastSeenPacketTime = startEpochJiffies;
+    uint32_t packetArrivalDifference = 0;
+    uint32_t elapsedEpochTime = 0;
+    uint32_t currentEpochTime = 0;
+    uint32_t setTimerAmountMs = 0;
+    uint32_t sortSaveBeginning;
+    uint32_t sortSaveEnd;
+    uint32_t ignoreEpochJiffies;
+    uint32_t jiffyDiff;
+    uint32_t rolloverCorrection = 0;
+    uint16_t prettyClose = 1;
+    uint32_t largestDifference = 0;
+    int32_t firingDifference = 0;
+    int32_t firingStartDifference = 0;
+    int32_t firingEndDifference = 0;
+
+    // 08 Dec 2004 : GWA : Do some initial packet setup.
+
+    FitsSend_Msg->seqno = seqno;
+    FitsSend_Msg->wroteStamp = FAIL;
+
+    // 06 Dec 2004 : GWA : This queue sort is sort of dumb, and occurs in two
+    //               phases: 1) walk the queue to figure out what to sort, 2)
+    //               sort that portion of the queue.  The sorting itself is
+    //               inefficient, but I don't really care at this point.
+    
+    sortIndex = lastStoredIndex;
+    sortSaveBeginning = lastStoredIndex;
+    sortSaveEnd = lastStoredIndex;
+
+    // 06 Dec 2004 : GWA : First pass; figure out limits.
+   
+    // 06 Apr 2005 : GWA : Ugh.  We have to find some intelligent way to deal
+    //               with timer rollover which is causing us problems.  Our
+    //               method is going to be to add some offset to get
+    //               everything past the rollover point.
+    
+    if (endEpochJiffies < startEpochJiffies) {
+      rolloverCorrection = (uint32_t) (-startEpochJiffies);
+    }
+    
+    // 08 Apr 2005 : GWA : Crap.  Another case we were missing.
+
+    if ((endEpochJiffies + FITS_EPOCH_JIFFY_LENGTH) < endEpochJiffies) {
+      rolloverCorrection = (uint32_t) (-startEpochJiffies);
+    }
+
+    while (sortCount < FITS_QUEUE_SIZE) {
+      
+      if (fireQueue[sortIndex].valid == 0) {
+        break;
+      }
+
+      // 08 Dec 2004 : GWA : Don't try and catch too-early arrivals here,
+      //               since I think that's breaking our queue.
+
+      atomic {
+        if ((fireQueue[sortIndex].arrivalTime + rolloverCorrection) < 
+            (endEpochJiffies + rolloverCorrection)) {
+          sortSaveEnd = sortIndex;    
+        }
+      }
+      sortCount++;
+      sortIndex = (sortIndex + 1) % FITS_QUEUE_SIZE;
+    }
+   
+    // 06 Dec 2004 : GWA : Now, second loop.  Sort within limits.
+
+    if (sortSaveEnd >= sortSaveBeginning) {
+      sortElementCount = sortSaveEnd - sortSaveBeginning;
+    } else {
+      sortElementCount = FITS_QUEUE_SIZE - (sortSaveBeginning - sortSaveEnd);
+    }
+
+    if (sortElementCount > 0) {
+      do {
+        numSwaps = 0;
+        for (sortIndex = 0; 
+             sortIndex < sortElementCount;
+             sortIndex++) {
+          uint8_t first = (sortSaveBeginning + sortIndex) % FITS_QUEUE_SIZE;
+          uint8_t second = (sortSaveBeginning + sortIndex + 1) 
+            % FITS_QUEUE_SIZE;
+
+          if ((fireQueue[first].arrivalTime + rolloverCorrection) >
+              (fireQueue[second].arrivalTime + rolloverCorrection)) {
+
+            // 15 Dec 2004 : GWA : Yikes!  Should use temporary array here.
+
+            FitsQueueT sortTemp;
+            sortTemp.arrivalTime = fireQueue[first].arrivalTime;
+            sortTemp.valid = fireQueue[first].valid;
+            sortTemp.sawDelay = fireQueue[first].sawDelay;
+
+            fireQueue[first].arrivalTime = fireQueue[second].arrivalTime;
+            fireQueue[first].valid = fireQueue[second].valid;
+            fireQueue[first].sawDelay = fireQueue[second].sawDelay;
+
+            fireQueue[second].arrivalTime = sortTemp.arrivalTime;
+            fireQueue[second].valid = sortTemp.valid;
+            fireQueue[second].sawDelay = sortTemp.sawDelay;
+
+            numSwaps++;
+          }
+        }
+      } while (numSwaps > 0);
+    }
+    
+    // 06 Dec 2004 : GWA : Main processing loop.  Bounded by the size of the
+    //               queue. 
+    
+    i = lastStoredIndex;
+
+    // 08 Dec 2004 : GWA : Add ignore period.  Doing it with a Timer in
+    //               realtime was (duh) wrong.
+
+    // 06 Apr 2005 : GWA : Ignore period now small enough we want it in
+    //               jiffies.
+#ifdef PLATFORM_PC
+    ignoreEpochJiffies = startEpochJiffies + 
+                         (FITS_IGNORE_PERIOD * FITS_MS_TO_JIFFIES);
+#else
+    ignoreEpochJiffies = startEpochJiffies + FITS_IGNORE_PERIOD;
+#endif
+    //dbg(DBG_USR2, "startEpochJiffies:%d\n", startEpochJiffies);
+    //dbg(DBG_USR2, "endEpochJiffies:%d\n", endEpochJiffies);
+    while (count < FITS_QUEUE_SIZE) {
+     
+      // 08 Dec 2004 : GWA : Early skips.  Arrival times in the last epoch
+      //               should sort to the front of the queue, allowing us to
+      //               ignore them and invalidate these entries here.
+
+      // 15 Dec 2004 : GWA : Adding skips when we don't get delay
+      //               information, or when we are too close to the previous
+      //               event.
+
+      if (fireQueue[i].valid == 1) {
+        if (((fireQueue[i].arrivalTime + rolloverCorrection) < (ignoreEpochJiffies + rolloverCorrection)) ||
+            (fireQueue[i].sawDelay == 0) || 
+            ((fireQueue[i].arrivalTime + rolloverCorrection) < 
+              ((lastSeenPacketTime + rolloverCorrection) + FITS_PACKET_IGNORE_PERIOD))) {
+          if ((fireQueue[i].arrivalTime + rolloverCorrection) < (ignoreEpochJiffies + rolloverCorrection)) {
+#ifdef FTSPINSTRUMENT
+            if ((fireQueue[i].arrivalTime + rolloverCorrection) < (startEpochJiffies + rolloverCorrection)) {
+              fireQueue[i].ignored = FITS_SKIP_LAST_EPOCH;
+            } else {
+              fireQueue[i].ignored = FITS_SKIP_TOO_EARLY;
+            }
+#endif
+#ifdef PLATFORM_PC
+#if 0
+            dbg(DBG_TEMP, "Skip TOO EARLY at %d:%d < %d\n", 
+                          i,
+                          fireQueue[i].arrivalTime + rolloverCorrection,
+                          ignoreEpochJiffies + rolloverCorrection);
+#endif
+#endif
+          } else if (fireQueue[i].sawDelay == 0) {
+#ifdef FTSPINSTRUMENT
+            fireQueue[i].ignored = FITS_SKIP_NO_DELAY;
+#endif
+#ifdef PLATFORM_PC
+            dbg(DBG_TEMP, "Skip NO DELAY at %d:%d < %d\n", 
+                          i,
+                          fireQueue[i].arrivalTime + rolloverCorrection,
+                          ignoreEpochJiffies + rolloverCorrection);
+#endif
+          } else {
+#ifdef FTSPINSTRUMENT
+            fireQueue[i].ignored = FITS_SKIP_TOO_CLOSE;
+#endif
+#ifdef PLATFORM_PC
+            dbg(DBG_TEMP, "Skip TOO CLOSE at %d:%d < %d\n", 
+                          i,
+                          fireQueue[i].arrivalTime + rolloverCorrection,
+                          ignoreEpochJiffies + rolloverCorrection);
+#endif
+          }
+          fireQueue[i].valid = 0;
+#ifdef FTSPINSTRUMENT
+          fireQueue[i].pleaseLog = 1;
+#endif
+          i = (i + 1) % FITS_QUEUE_SIZE;
+          count++;
+          continue;
+        }
+      }
+   
+      // 06 Dec 2004 : GWA : Early bails, if we've either reached the end of
+      //               the queue (valid bit not set), or we've reached a
+      //               point in the queue where events are in the next epoch.
+
+      if ((fireQueue[i].valid == 0) ||
+          ((fireQueue[i].arrivalTime + rolloverCorrection) > (endEpochJiffies + rolloverCorrection))) {
+
+        // 06 Dec 2004 : GWA : A little tricky.  Here, since we have run out
+        //               of processable queue entries without being able to
+        //               compute a time to fire, we need to add in the
+        //               remaining time to fire to our elapsed epoch time,
+        //               used to set the timer below.  Otherwise, for
+        //               example, with nothing in the queue we would just
+        //               fire over and over again.
+        
+        elapsedEpochTime += 
+          (FITS_EPOCH_JIFFY_LENGTH - currentEpochTime);
+       
+        // 06 Dec 2004 : GWA : This entry will be valid in a later context,
+        //               so back up the counter, used below to figure out
+        //               where to start processing next time.
+        
+        //dbg(DBG_TEMP, "Queue empty at %d\n", i);
+        
+        break;
+      }
+    
+      // 29 Oct 2005 : GWA : Try to determine when we are close to being
+      //               sychronized.
+      /*
+      firingStartDifference = 
+        (fireQueue[i].arrivalTime + rolloverCorrection) - 
+        (startEpochJiffies + rolloverCorrection);
+      firingEndDifference = 
+        (endEpochJiffies + rolloverCorrection) - 
+        (fireQueue[i].arrivalTime + rolloverCorrection);
+      if (firingEndDifference < firingStartDifference) {
+        firingDifference = firingEndDifference;
+      } else {
+        firingDifference = firingStartDifference;
+      }
+      firingDifference = 100000;
+      if (firingDifference > 10) {
+        prettyClose = 0;
+      }
+      if (firingDifference > largestDifference) {
+        largestDifference = firingDifference;
+      }
+      */
+      // 06 Dec 2004 : GWA : Compute different between packet arrivals.
+      //               lastSeenPacketTime is initialized above to the
+      //               beginning of the epoch, so the first time through is
+      //               fine.
+      //
+      // 06 Apr 2005 : GWA : I think that we can do the differences as-is.
+
+      packetArrivalDifference = fireQueue[i].arrivalTime - lastSeenPacketTime;
+     
+      // 06 Dec 2004 : GWA : Update for calculating packet arrival
+      //               differences.
+      
+      lastSeenPacketTime = fireQueue[i].arrivalTime;
+      
+      // 06 Dec 2004 : GWA : Add that to both our notions of time.
+      
+      elapsedEpochTime += packetArrivalDifference;
+      currentEpochTime += packetArrivalDifference;
+      
+      // 06 Dec 2004 : GWA : Only currentEpochTime is adjusted by the firing
+      //               function.  It determines if we should fire within a
+      //               given epoch, whereas the elapsedEpochTime keeps track
+      //               of how much time would have passed in that epoch so
+      //               that we can set the Timer up correctly.
+
+      currentEpochTime = 
+        call FiringFunction.computeNewX(currentEpochTime);
+
+      // 06 Dec 2004 : GWA : Done with the entry, make invalid.
+      
+      fireQueue[i].valid = 0;
+#ifdef FTSPINSTRUMENT
+      fireQueue[i].pleaseLog = 1;
+      fireQueue[i].ignored = 0;
+#endif
+      // 06 Dec 2004 : GWA : Done above the epoch checking to ensure the
+      //               correct value on exit.
+
+      i = (i + 1) % FITS_QUEUE_SIZE;
+      
+      // 06 Dec 2004 : GWA : Are we ready to fire?  If so, get out of here.
+      
+      if (currentEpochTime > FITS_EPOCH_JIFFY_LENGTH) {
+        break;
+      }
+
+      // 06 Dec 2004 : GWA : Update our queue pointer and loop count.
+
+      count++;
+    }
+    
+    // 06 Dec 2004 : GWA : Allow queue processing to start at the appropriate
+    //               place next time.
+    
+    //dbg(DBG_TEMP, "Setting stored index to %d\n", i);
+
+    lastStoredIndex = i;
+
+    // 06 Dec 2004 : GWA : Move the epoch delimiters.
+    
+    //dbg(DBG_USR2, "startEpochJiffies:%d\n", startEpochJiffies);
+    //dbg(DBG_USR2, "endEpochJiffies:%d\n", endEpochJiffies);
+    //dbg(DBG_USR2, "diff : %d\n", endEpochJiffies - startEpochJiffies);
+    atomic {
+      jiffyDiff = endEpochJiffies - startEpochJiffies;
+      startEpochJiffies += elapsedEpochTime;
+      if (jiffyDiff > FITS_EPOCH_JIFFY_LENGTH) {
+        startEpochJiffies += (jiffyDiff - FITS_EPOCH_JIFFY_LENGTH);
+      } else {
+        startEpochJiffies -= (FITS_EPOCH_JIFFY_LENGTH - jiffyDiff);
+      }
+    }
+    //dbg(DBG_USR2, "startEpochJiffies:%d\n", startEpochJiffies);
+    //dbg(DBG_USR2, "endEpochJiffies:%d\n", endEpochJiffies);
+    // 06 Dec 2004 : GWA : Alrighty, set up the timer.  Poor resolution here.
+    //               Should we use the MicroTimer instead?
+  
+    // 12 Dec 2004 : GWA : Yes!  Now runs on Timer3, precluding problems with
+    //               the radio.  The following is kept around for TOSSIM
+    //               compatibility.  FITS_BINARY_MS defined differently for
+    //               different platforms.
+
+    // 12 Dec 2004 : GWA : But, need new calculation model, so moved up here.
+
+#ifdef PLATFORM_PC
+    setTimerAmountMs = 
+      (elapsedEpochTime * FITS_BINARY_MS) / FITS_EPOCH_JIFFY_LENGTH;
+
+    //dbg(DBG_USR2, "elapsedEpochTime:%d\n", elapsedEpochTime);
+    //dbg(DBG_USR2, "Setting Timer to %d\n", setTimerAmountMs);
+    // 08 Dec 2004 : GWA : Since we're delaying the processing, we need to
+    //               take that into account.
+    // 08 Dec 2004 : GWA : Also factor in processing delay.
+
+    //dbg(DBG_TEMP, "Setting Timer to %d\n", setTimerAmountMs);
+    setTimerAmountMs -= 
+      ((call SysTime.getTime32() - endEpochJiffies) * FITS_BINARY_MS) 
+        / FITS_EPOCH_JIFFY_LENGTH;
+    //dbg(DBG_USR2, "endEpochJiffies %d\n", endEpochJiffies);
+        
+    //dbg(DBG_USR2, "Setting Timer to %d\n", setTimerAmountMs);
+    
+    call FireTimer.start(TIMER_ONE_SHOT, setTimerAmountMs);
+#else
+
+    // 12 Dec 2004 : GWA : The resolution of our timer is SO close to the
+    //               MicroTimer resolution (921.6kHz v. 1MHz), so I'm just
+    //               going to equate the two here.  My guess is that that
+    //               isn't really a problem.
+    
+    // 13 Dec 2004 : GWA : In fact, FITSTimerM now uses jiffies rather than
+    //               microseconds, so this is perfect.
+
+    setTimerAmountMs = elapsedEpochTime;
+#ifdef FTSPINSTRUMENT
+    nextInterval = setTimerAmountMs;
+#endif
+    atomic {
+      setTimerAmountMs -= call SysTime.getTime32() - endEpochJiffies;
+    } 
+    
+    FitsSend_Msg->myPeriod = FitsFiring_Msg->myPeriod = FITS_EPOCH_JIFFY_LENGTH;
+    FitsFiring_Msg->prettyClose = prettyClose;
+    FitsFiring_Msg->largestDifference = largestDifference;
+    call MicroTimer.start(setTimerAmountMs);
+#endif
+#ifdef FTSPINSTRUMENT
+    post infoTask();
+#endif
+    return;
+  }
+
+  event result_t ProcessDelayTimer.fired() {
+    post processTask();
+    return SUCCESS;
+  }
+
+#ifdef FTSPINSTRUMENT
+  task void SendSerialFireTask() {
+    uint32_t globalFireTime = endEpochJiffies;
+    synced = call GlobalTime.local2Global(&globalFireTime);
+    if (synced) {
+      //call Leds.yellowOn();
+      FitsDiag_Msg->synced = 1;
+    } else {
+      //call Leds.yellowToggle();
+      FitsDiag_Msg->synced = 0;
+    }
+    FitsDiag_Msg->fireSeqNo = seqno;
+    FitsDiag_Msg->rootID = call TimeSyncInfo.getRootID();
+    FitsDiag_Msg->firetime = globalFireTime;
+    call SendFitsDiagMsg.send(TOS_UART_ADDR,
+                              sizeof(FitsDiagMsgT),
+                              &fitsdiag_msg);
+    return;
+  }
+  event result_t SendFitsDiagMsg.sendDone(TOS_MsgPtr msg, result_t success) {
+    return SUCCESS;
+  }
+
+#endif
+#ifdef PLATFORM_PC
+  event result_t FireTimer.fired() {
+#else
+  event async result_t MicroTimer.fired() {
+#endif
+    endEpochJiffies = call SysTime.getTime32();
+    
+    call Leds.redToggle();
+    atomic startSendJiffies = call SysTime.getTime32();
+    firstNewIndex = currentQueuePosition;
+
+    // 13 Dec 2004 : GWA : This is a relic and poorly named.  What we're
+    //               doing now is decoupling the firing from the sending,
+    //               inserting a delay (now up to 1/10 of our base period).
+    //               Processing occurs following the original message and the
+    //               follow up message.  Hopefully this will kill two birds
+    //               with one stone.
+  
+    // 16 Dec 2004 : GWA : I think that there's a problem with these delays,
+    //               so I'm removing them for the simulations.
+
+    call SendDelayTimer.start(TIMER_ONE_SHOT, 
+                              ((call Random.rand() % FITS_SEND_DELAY) +
+                              FITS_SEND_DELAY));
+    call ProcessDelayTimer.start(TIMER_ONE_SHOT, FITS_PROCESS_DELAY);
+#ifdef FTSPINSTRUMENT
+    post SendSerialFireTask();
+#endif
+    return SUCCESS;
+  }
+
+  task void EventSendTask() {
+
+    // 11 Mar 2005 : GWA : On TOSSIM (at least without kind of broken CC2420
+    //               support) we're trying to get rid of an extra message to
+    //               remove a bunch of the preprocessor directives.  Here we
+    //               take advantage of the fact that TOSSIM computation takes
+    //               no time and we _KNOW_ how long this send is going to
+    //               spend in the radio stack (with the simple radio model,
+    //               none).  If we want to introduce fake MAC delays we'll
+    //               have to make sure that they happen above this piece of
+    //               code.
+
+    FitsMsgT * modifyMessage = (FitsMsgT *) (fitssend_msg.data);
+#if defined(PLATFORM_PC) && !defined(TOSSIMCC2420)
+
+    // 11 Mar 2005 : GWA : Here we're exploiting the fact that sending a
+    //               packet in the packet-level simulation takes 1/40 of a
+    //               second and this is a static value.  If we ever a) fix
+    //               the packet radio model to note use mica timings or b)
+    //               use the bit-level radio this needs to fixed.
+
+    lastSendTime = (call SysTime.getTime32() + FITS_SEND_CORRECTION);
+    lastSendDelay = (lastSendTime - startSendJiffies);
+    modifyMessage->senttime = startSendJiffies;
+    modifyMessage->sentdelay = lastSendDelay;
+    dbg(DBG_USR1, "%u\t%u\t%u\n",
+                   modifyMessage->seqno,
+                   modifyMessage->senttime,
+                   modifyMessage->sentdelay);
+#endif
+    if (!call SendFitsMsg.send(TOS_BCAST_ADDR,
+                                 sizeof(FitsMsgT),
+                                 &fitssend_msg)) {
+      atomic seqno++;
+      call Leds.yellowToggle();
+    }
+
+    return;
+  }
+ 
+  event result_t SendDelayTimer.fired() {
+
+    // 21 Feb 2005 : GWA : In the CC2420 Model FitsMsgT has no dynamic fields
+    //               and is only used to convey information about when the
+    //               event happened; the follow on carries the delay.  In
+    //               Mica2, we can put the delay directly into this packet.
+
+    post EventSendTask();
+    return SUCCESS;
+  }
+
+// 21 Feb 2005 : GWA : Don't send delays in seperate packet on Mica2
+
+// 11 Mar 2005 : GWA : Dumped extra packets over the side.
+
+  event result_t SendFitsMsg.sendDone(TOS_MsgPtr msg, result_t success) {
+    atomic seqno++;
+
+    // 21 Feb 2005 : GWA : Mica2 allows us packet level rewriting right
+    //               before it hits the wire, eliminating the need to send
+    //               two packets.
+    //
+    // 11 Mar 2005 : GWA : We've fixed this across all platforms (I hope).
+    //               We should never need two packets.
+
+    return SUCCESS;
+  }
+ 
+// 21 Feb 2005 : GWA : Mica2 doesn't need seperate packet.
+
+  event TOS_MsgPtr ReceiveFitsMsg.receive(TOS_MsgPtr fitsreceive_msg) {
+
+    // bool connResult;
+    bool connResult;
+    FitsReceive_Msg = (FitsMsgT *) fitsreceive_msg->data;
+
+#ifdef USE_NODECON
+
+    // GT: topology conversion from .nss to motelab          
+    // GT: Check in the topology graph if I should receive a message from 
+    // this node
+    connResult = call NodeConnectivity.connected(FitsReceive_Msg->sourceaddr, 
+                                                 TOS_LOCAL_ADDRESS);
+    if (connResult == FALSE) {
+      dbg(DBG_USR1, "Dropping message from %d\n",
+                    FitsReceive_Msg->sourceaddr);
+      return fitsreceive_msg;
+    }
+#endif    
+
+    // 29 Oct 2005 : GWA : Adding didn't write stamp check here.  Simply
+    //               ignore messages without valid stamps.
+
+    if (FitsReceive_Msg->wroteStamp == FAIL) {
+      return fitsreceive_msg;
+    }
+
+    if (fireQueue[currentQueuePosition].valid == 1) {
+      
+      // 06 Dec 2004 : GWA : Hmmm... not sure what to do here.  If the queue
+      //               is full, drop the message?  That's what we'll do for
+      //               now.
+      
+      int8_t i;
+#if 0
+      dbg(DBG_TEMP, 
+          "Queue overflow at %d! Printing queue:\n",
+          currentQueuePosition);
+      for (i = 0; i < FITS_QUEUE_SIZE; i++) {
+        dbg(DBG_TEMP, 
+            "Queue[%d] = %d, Valid = %d\n",
+            i, 
+            fireQueue[i].arrivalTime,
+            fireQueue[i].valid);
+      }
+#endif
+    } else {
+      dbg(DBG_TEMP, 
+          "Received Message From %d with seqno %d\n",
+          FitsReceive_Msg->sourceaddr,
+          FitsReceive_Msg->seqno);
+      fireQueue[currentQueuePosition].sourceaddr =
+        FitsReceive_Msg->sourceaddr;
+      fireQueue[currentQueuePosition].seqno = 
+        FitsReceive_Msg->seqno;
+      fireQueue[currentQueuePosition].valid = 1;
+      atomic {
+
+        // 11 Mar 2005 : GWA : We get the delay in every message now.
+
+#ifdef PLATFORM_PC
+        fireQueue[currentQueuePosition].arrivalTime =
+          (call SysTime.getTime32() - FitsReceive_Msg->sentdelay);
+#else
+        fireQueue[currentQueuePosition].arrivalTime =
+          (lastHeardTime - FitsReceive_Msg->sentdelay);
+#endif
+        fireQueue[currentQueuePosition].sawDelay = 1;
+        fireQueue[currentQueuePosition].period = FitsReceive_Msg->myPeriod;
+#ifdef FTSPINSTRUMENT
+        fireQueue[currentQueuePosition].pleaseLog = 0;
+        fireQueue[currentQueuePosition].ignored = 0;
+        fireQueue[currentQueuePosition].FTSPStamp = lastFTSPHeardTime;
+        fireQueue[currentQueuePosition].FTSPSynced = lastFTSPSynced;
+        fireQueue[currentQueuePosition].sentdelay = FitsReceive_Msg->sentdelay;
+#endif
+      }
+      atomic {
+        currentQueuePosition = (currentQueuePosition + 1) % FITS_QUEUE_SIZE;
+      }
+    }
+    return fitsreceive_msg;
+  }
+
+// 21 Feb 2005 : GWA : Shouldn't get any of these packets on Mica2
+//
+// 11 Mar 2005 : GWA : Removed.  We shouldn't get any of these packets ever.
+
+#if !defined(PLATFORM_PC) || defined(TOSSIMCC2420)
+  async event void RadioSendCoordinator.startSymbol(uint8_t bitsPerBlock, 
+                                                    uint8_t offset, 
+                                                    TOS_MsgPtr msgBuff) { 
+
+    // 21 Feb 2005 : GWA : Put this back here to use with Mica2.
+
+    FitsMsgT * modifyMessage = (FitsMsgT *) (msgBuff->data);
+
+    // 29 Oct 2005 : GWA : Multiple stamp guard.
+
+    if (modifyMessage->wroteStamp == SUCCESS) {
+      return;
+    }
+
+    lastSendTime = call SysTime.getTime32();
+    lastSendDelay = (lastSendTime - startSendJiffies);
+  
+#if defined(PLATFORM_MICA2)
+    modifyMessage->senttime = lastSendTime;
+    modifyMessage->sentdelay = lastSendDelay;
+    modifyMessage->wroteStamp = SUCCESS;
+#else
+
+    // 23 Feb 2005 : GWA : Taken from FTSP example of how to do packet
+    //               rewriting on the CC2420.  We set up things in our memory
+    //               and then write things into the right spot in the buffer.
+
+    *(uint32_t *)((void *) msgBuff->data + FITS_TIME_OFFSET) =
+      lastSendTime;
+    *(uint32_t *)((void *) msgBuff->data + FITS_DELAY_OFFSET) = 
+      lastSendDelay;
+    *(uint32_t *)((void *) msgBuff->data + FITS_WROTESTAMP_OFFSET) = SUCCESS;
+
+    call HPLCC2420RAM.write(TX_FIFO_MSG_START + FITS_TIME_OFFSET, 
+                            12, 
+                            (void *)msgBuff->data + FITS_TIME_OFFSET);
+#endif
+    // 08 Dec 2004 : GWA : Recording local time to piggyback skew experiment
+    //               on top of initial listener accuracy experiment.
+  }
+                                                    
+  async event void RadioSendCoordinator.byte(TOS_MsgPtr msg, 
+                                             uint8_t byteCount) { }
+  
+  async event void RadioSendCoordinator.blockTimer() { }                                         
+  async event void RadioReceiveCoordinator.startSymbol(uint8_t bitsPerBlock, 
+                                                       uint8_t offset, 
+                                                       TOS_MsgPtr msgBuff) {
+    uint32_t FTSPStamp;
+    bool synced;
+    lastHeardTime = call SysTime.getTime32();
+#ifdef FTSPINSTRUMENT
+    synced = call GlobalTime.getGlobalTime(&FTSPStamp);
+    lastFTSPHeardTime = FTSPStamp;
+    lastFTSPSynced = synced;
+#endif
+  }
+  
+  async event void RadioReceiveCoordinator.byte(TOS_MsgPtr msg, 
+                                                 uint8_t byteCount) { } 
+  async event void RadioReceiveCoordinator.blockTimer() { }
+
+  #ifndef PLATFORM_MICA2
+  async event result_t HPLCC2420RAM.readDone(uint16_t addr, 
+                                             uint8_t length, 
+                                             uint8_t* buffer) {
+    return SUCCESS;
+  }
+  
+  async event result_t HPLCC2420RAM.writeDone(uint16_t addr, 
+                                              uint8_t length, 
+                                              uint8_t* buffer) {
+    return SUCCESS;
+  }
+  #endif
+#endif 
+}

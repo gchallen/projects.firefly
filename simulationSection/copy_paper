@@ -1,0 +1,3 @@
+
+cp sensys.pdf ~gtewari/public_html/firefly/spaper/
+chmod a+rx ~gtewari/public_html/firefly/spaper/*

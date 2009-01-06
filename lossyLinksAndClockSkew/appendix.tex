@@ -1,0 +1,33 @@
+
+\subsection{Changes to TOSSIM}
+
+The changes to modify TOSSIM code to interpret the loss in the \emph{.nss} file as
+packet level loss were made in the TinyOs code tree in the tinyos-1.1.10/tos/platform/pc/packet/TosssimPacketM.nc
+file.\newline
+
+\noindent
+All the experiments for this document were carried out on sb06.eecs.harvard.edu in the
+\emph{local geetika Fits-20584} directory.
+
+\subsection{Sequence for Conducting Experiments}
+
+\begin{enumerate}\addtolength{\itemsep}{-0.5\baselineskip}
+\item Generate experiment file(s). The format of an experiment file is as follows: 
+Datadir FFConstant TopologyFile NumMotes Time TopologyTag RandomSeed Makefile IgnorePeriod ProcessDelay SendDelay 
+Use \emph{createExpFile.pl} in the tools directory.
+If repeating the experiment for multiple runs, change the random seed.
+\item Run the experiment:
+\emph{..tools doExperiment.pl  yourExpFile expNum.txt ..data local geetika tinyos 1.1.10 tos-NUM}
+The shell script doexpt will do a number of these by changing the expNum variable.
+Don't worry about recompiling the system. Doexperiment.pl will do that for you as long as you tell
+it what diretory to compile in. Make sure to give the correct directory name: \emph{Eg local geetika tinyos-1.1.10 tosX}
+\item Run the metric computation scripts on the experiments
+\emph{.doIt.pl ..data dirName-expNum .. data dirNameexpNum dirNameexpNumresFile.txt}
+The shell script doprocessing will do these for all runs by changing the expNum variable.
+\item Now average the data over multiple runs and compute error bars by running avgMetricMultRuns.pl
+from the tools directory. This can compute the percent-synched cases, time to sync, and 50th and 90th percentile
+group spreads by passing different options to this script.
+\end{enumerate}
+
+
+

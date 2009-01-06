@@ -1,0 +1,3 @@
+# Header file for experiments scripts
+# Field description follows
+# DataDir FFConstant TopologyFile NumMotes  Time(sec) TopologyTag

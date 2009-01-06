@@ -1,0 +1,39 @@
+XAxis: Firing function constant: -labelalign center -labeldist 0.5
+YAxis: 90th percentile group spread (usec): -labelalign center -labeldist 0.5 -grid -setmax 5764.30165829044
+Key: right-(1.25*inch), top-(0.5*inch): : -keywidth 1 -keytitlealign right -textfont helvetica10 -fillcolor white -keyframe -elemwidth 0.1 -elemheight 0.1
+Options: -size 8x5 -labeldist 1.0 -textfont helvetica12 -labelfont helvetica12 -ticfont helvetica10 -keyframe 0 -valueangle 90 -valuefont helvetica10 -valuealign left -interpolation line -topmargin 0.2 -bottommargin 1.0 -rightmargin 0.2 -leftmargin 1.0 -plotspacing 5
+BeginCluster: FF 70: -xlabel 0.2
+  Bar: 3753.79999995858: 4 nodes: -inkey
+  Bar: 4191.60000014926: 8 nodes: -inkey
+  Bar: 4271.66666658726: 12 nodes: -inkey
+  Bar: 4563.99999995938: 16 nodes: -inkey
+  Bar: 4761.2000000754: 20 nodes: -inkey
+EndCluster
+BeginCluster: FF 100: -xlabel 0.2
+  Bar: 4147.00000001744: 4 nodes:
+  Bar: 4208.20000008462: 8 nodes:
+  Bar: 4194.19999989259: 12 nodes:
+  Bar: 4494.99999986832: 16 nodes:
+  Bar: 4477.60000006383: 20 nodes:
+EndCluster
+BeginCluster: FF 500: -xlabel 0.2
+  Bar: 4804.40000010276: 4 nodes:
+  Bar: 4354.60000001058: 8 nodes:
+  Bar: 4259.00000003594: 12 nodes:
+  Bar: 4532.79999994152: 16 nodes:
+  Bar: 4667.39999997116: 20 nodes:
+EndCluster
+BeginCluster: FF 750: -xlabel 0.2
+  Bar: 4101.50000004705: 4 nodes:
+  Bar: 4734.80000003974: 8 nodes:
+  Bar: 4290.20000003675: 12 nodes:
+  Bar: 4338.1999999383: 16 nodes:
+  Bar: 4999.99999988177: 20 nodes:
+EndCluster
+BeginCluster: FF 1000: -xlabel 0.2
+  Bar: 4473.74999988881: 4 nodes:
+  Bar: 4786.60000002264: 8 nodes:
+  Bar: 4405.5999999955: 12 nodes:
+  Bar: 4658.99999999238: 16 nodes:
+  Bar: 4873.99999997251: 20 nodes:
+EndCluster

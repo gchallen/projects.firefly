@@ -1,0 +1,45 @@
+################################################################################
+# supported platforms:  mica2, 
+#                       mica2dot, 
+#                       micaZ (only TIMESYNC_SYSTIME), 
+#                       telos(no TIMESYNC_SYSTIME support)
+#
+# the following directives are recognized by TimeSync component 
+#
+# -DTIMESYNC_DEBUG: enforces multiple hops in software
+# -DTIMESYNC_SYSTIME: choice of clock source(1MHz internal, or 32kHz external)
+#
+################################################################################
+
+#period of timesync msg broadcast and the period of reference broadcast
+VUDIR = $(TOSDIR)/../contrib/vu/tos
+PFLAGS += -DTIMESYNC_SYSTIME 
+PFLAGS += -DTIMESYNC_RATE=10
+PFLAGS += -DFTSPINSTRUMENT
+PFLAGS += -DFTSP_STATIC_ROOT
+PFLAGS += -DFTSP_ENTRY_THROWOUT_LIMIT=100
+PFLAGS += -DFTSP_STATIC_ROOT_ID=21
+
+#include dirs for telos and micaz
+PLATAUX = micaz telos
+PLATFORM := $(filter $(PLATAUX), $(MAKECMDGOALS))
+ifeq ($(PLATFORM),telos) 
+    PFLAGS += -I./TimeSync/CC2420
+endif
+ifeq ($(PLATFORM),micaz) 
+    PFLAGS += -I./TimeSync/CC2420
+endif
+
+#path to the vanderbilt TimeSync component
+PFLAGS += -I./TimeSync 
+PFLAGS += -I$(VUDIR)/system/ClockTimeStamping
+COMPONENT=Fits
+DEFAULT_LOCAL_GROUP=0x44
+
+include $(TOSDIR)/../tools/make/Makerules
+java:
+	mig java -java-classname=FitsMsgT FitsMsg.h FitsMsgT -o FitsMsgT.java
+	mig java -java-classname=FitsDiagMsgT FitsMsg.h FitsDiagMsgT -o FitsDiagMsgT.java
+	mig java -java-classname=FitsInfoMsgT FitsMsg.h FitsInfoMsgT -o FitsInfoMsgT.java
+	mig java -java-classname=FitsFiringMsgT FitsMsg.h FitsFiringMsgT -o FitsFiringMsgT.java
+	javac *.java

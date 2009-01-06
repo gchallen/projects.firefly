@@ -1,0 +1,110 @@
+\section{Introduction}
+
+Computer scientists have often looked to nature for inspiration.
+Researchers studying distributed systems have long envied, and
+attempted to duplicate, the fault-tolerance and decentralized control
+achieved in natural systems.  Those of us studying sensor networks
+also have every reason to be envious.  Designing software coordinating
+the output of a collection of limited devices frequently feels as
+frustrating as orchestrating the activity of a colony of stubborn
+ants, or guiding a school of uncooperative fish.  And yet ant colonies
+complete difficult tasks, schools of fish navigate the sea, and swarms
+of fireflies stretching for miles can pulse in perfect unison, all
+without centralized control or perfect individuals. The spontaneous
+emergence of synchronicity --- for example, fireflies flashing in
+unison or cardiac cells firing in synchrony --- has long attracted the
+attention of biologists, mathematicians and computer scientists.
+
+%% SIMULTANEOUS COLLECTIVE ACTION
+
+Synchronicity is a powerful primitive for sensor networks. We define
+synchronicity as the ability to organize {\em simultaneous collective
+action} across a sensor network. Synchronicity is not the same as time
+synchronization: the latter implies that nodes share a common notion
+of time that can be mapped back onto a real-world clock, while the
+former only requires that nodes agree on a firing period and phase.
+The two primitives are complementary: nodes with access to a common
+time base can schedule collective action in the future, and
+conversely, nodes that can arrange collective action can establish a
+meaningful network-wide time base. However, the two primitives are also
+independently useful. For example, nodes within a sensor network may
+want to compare the times at which they detected some event. This task
+requires a notion of global time, however it does not require
+real-time coordination of actions. 
+
+Similarly, synchronicity by itself can be extremely useful as a sensor
+network coordination primitive. A commonly-used mechanism for limiting
+energy use is to carefully schedule node duty cycles so that all nodes
+in a network (or a portion of the network) will wake up at the same
+time, sample their sensors, and relay data along a routing path to the
+base station. Coordinated communication scheduling has been used both
+at the MAC level~\cite{s-mac} and in multi-hop routing
+protocols~\cite{stem} to save energy. Synchronicity can also be
+used to coordinate sampling across multiple nodes in a network,
+which is especially important in applications with high data
+rates. Previous work on seismic analysis of
+structures~\cite{glaser-smart-buildings}, shooter
+localization~\cite{shooter-localization}, and volcanic
+monitoring~\cite{volcano-ewsn05} could use such a primitive and avoid
+the overhead of maintaining consensus on global time until
+absolutely necessary.
+
+In this paper, we present a biologically-inspired distributed
+synchronicity algorithm implemented on TinyOS motes. This algorithm is
+based on a mathematical model originally proposed by Mirollo and
+Strogatz to explain how neurons and fireflies spontaneously
+synchronize~\cite{strogatz}. This seminal work proved that a very
+simple reactive node behavior would always converge to produce global
+synchronicity, irrespective of the number of nodes and starting
+times. Recently Lucarelli and Wang~\cite{lucarelli04} demonstrated
+that this result also holds for multi-hop topologies, an important
+contribution towards making the model feasible for sensor networks.
+
+The firefly-inspired synchronization described by Mirollo and Strogatz
+has several salient features that make it attractive for sensor
+networks. Nodes execute very simple computations and interactions, and
+maintain no internal state regarding neighbors or network topology. As
+a result, the algorithm robustly adapts to changes such as the loss
+and addition of nodes and links \cite{lucarelli04}. The synchronicity
+provably emerges in a completely decentralized manner, without any
+explicit leaders and irrespective of the starting state.
+
+However, implementing this approach on wireless sensor networks still
+presents significant obstacles. In particular, the previous
+theoretical work assumes {\em instantaneous} communication between
+nodes.  In real sensor networks, radio contention and processing
+latency lead to significant and unpredictable communication
+latencies. Earlier work also assumes non-lossy radio links, identical
+oscillator frequencies, and arbitrary-precision floating-point
+arithmetic which are unrealistic in current sensor networks.
+
+We present the {\em reachback firefly algorithm} (RFA) that accounts for
+communication latencies, by modifying the original firefly model to
+allow nodes to use information from the past to adjust the future
+firing phase. We evaluate our algorithm in three ways: theory,
+simulation and implementation. We present theoretical results to prove
+the convergence of our algorithm in simple cases and predict the
+impact of parameter choice. Next we leverage TOSSIM, the TinyOS
+simulator, to explore the behavior of the algorithm over a range of
+parameter values, varying numbers of nodes, and different
+communication topologies. These simulation results validate the
+theoretical predictions. Finally, we present results from experiments
+on a real sensor network testbed. These results demonstrate that our
+algorithm is robust in the face of real radio effects and node
+limitations.  Our results show that such a decentralized approach can
+provide synchronicity to within 100~$\mu$sec on a complex multiple-hop
+network with asymmetric and lossy links. To the best of our knowledge,
+this work represents the first implementation of firefly-inspired
+synchronicity on the MicaZ mote hardware, and demonstrates the ability
+of the model to achieve synchronicity given real radio and hardware
+limitations.
+
+Our paper is organized as follows. Section \ref{sec-background}
+presents related work. In Section \ref{sec-algorithm} we present RFA
+in the context of the Mirollo and Strogatz model and describe current
+hardware and radio limitations. Sections
+\ref{sec-theory}-\ref{sec-motes} present our metrics and theoretical,
+simulation and experimental results. We conclude with future work.
+
+
+

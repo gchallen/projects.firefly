@@ -1,0 +1,148 @@
+% Formatting commands to conform to ACM Conference Proceedings
+% Adapted from 'official' ACM style file by Matt Welsh, 16 July 2001
+% This version adapted for 10point fonts, Matt Welsh, 20 June 2002
+
+\makeatletter
+
+% For ACM formatting specifications
+\newfont{\ixpt}{ptmr at 9pt}
+\newfont{\ninept}{ptmr at 9pt}
+\newfont{\ttlfnt}{phvb at 18pt}
+\newfont{\aufnt}{phvr at 12pt}
+\newfont{\affaddr}{phvr at 10pt}
+\newfont{\eaddrfnt}{pcrb at 10pt}
+\newfont{\secfnt}{ptmb at 12pt}
+\newfont{\subsecfnt}{ptmri at 11pt}
+
+\def\small{\@setsize\small{9pt}\ixpt\@ixpt
+\abovedisplayskip 7.6pt plus 3pt minus 4pt%
+\belowdisplayskip \abovedisplayskip
+\abovedisplayshortskip \z@ plus2pt%
+\belowdisplayshortskip 3.6pt plus2pt minus 2pt 
+\def\@listi{\leftmargin\leftmargini %% Added 22 Dec 87
+\topsep 4pt plus 2pt minus 2pt\parsep 2pt plus 1pt minus 1pt
+\itemsep \parsep}}
+
+%\def\small{\@setsize\small{9pt}\viiipt\@viiipt
+%\abovedisplayskip 7.6pt plus 3pt minus 4pt%
+%\belowdisplayskip \abovedisplayskip
+%\abovedisplayshortskip \z@ plus2pt%
+%\belowdisplayshortskip 3.6pt plus2pt minus 2pt 
+%\def\@listi{\leftmargin\leftmargini %% Added 22 Dec 87
+%\topsep 4pt plus 2pt minus 2pt\parsep 2pt plus 1pt minus 1pt
+%\itemsep \parsep}}
+
+% For ACM copyright space
+\newfont{\crnotice}{ptmr at 8pt}
+\def\ftype@copyrightbox{8}
+\def\copyrightspace{
+\@float{copyrightbox}[b]
+\begin{center}
+\setlength{\unitlength}{1pc}
+\begin{picture}(20,6) %Space for copyright notice
+\put(0,-0.95){\crnotice{\@toappear}}
+\end{picture}
+\end{center}
+\end@float}
+\def\@toappear{} % Default setting blank - commands below change this.
+\long\def\toappear#1{\def\@toappear{\parbox[b]{20pc}{\baselineskip 9pt#1}}}
+
+%% MDW
+%\toappear{\the\boilerplate\par
+%{\confname{\the\conf}} \the\confinfo\par \the\copyrightetc.}
+%
+
+
+\newif\if@ll % to record which version of LaTeX is in use
+
+\expandafter\ifx\csname LaTeXe\endcsname\relax % LaTeX2.09 is used
+\else% LaTeX2e is used, so set ll to true 
+\global\@lltrue 
+\fi 
+
+\if@ll% allow use of old-style font change commands in LaTeX2e
+\@maxdepth\maxdepth
+%
+%\DeclareOldFontCommand{\rm}{\ninept\rmfamily}{\mathrm}
+\DeclareOldFontCommand{\rm}{\rmfamily}{\mathrm}
+\DeclareOldFontCommand{\sf}{\normalfont\sffamily}{\mathsf}
+\DeclareOldFontCommand{\tt}{\normalfont\ttfamily}{\mathtt}
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
+\DeclareOldFontCommand{\it}{\normalfont\itshape}{\mathit}
+\DeclareOldFontCommand{\sl}{\normalfont\slshape}{\@nomath\sl}
+\DeclareOldFontCommand{\sc}{\normalfont\scshape}{\@nomath\sc}
+\DeclareRobustCommand*{\cal}{\@fontswitch{\relax}{\mathcal}}
+\DeclareRobustCommand*{\mit}{\@fontswitch{\relax}{\mathnormal}}
+\fi
+%
+\if@ll
+ \renewcommand{\rmdefault}{cmr}  % was 'ttm'
+  \renewcommand{\@ptsize}{}
+  \renewcommand{\normalsize}{%
+    \@setfontsize\normalsize\@xpt{10.5\p@}
+    \abovedisplayskip 6\p@ \@plus2\p@ \@minus\p@
+    \belowdisplayskip \abovedisplayskip
+    \abovedisplayshortskip 6\p@ \@minus 3\p@
+    \belowdisplayshortskip 6\p@ \@minus 3\p@
+    \let\@listi\@listI
+  }
+\else
+  \def\@normalsize{%changed next to 9 from 10
+    %\@setsize\normalsize{9\p@}\ixpt\@ixpt
+    \@setsize\normalsize{10\p@}\xpt\@xpt
+   \abovedisplayskip 6\p@ \@plus2\p@ \@minus\p@
+    \belowdisplayskip \abovedisplayskip
+    \abovedisplayshortskip 6\p@ \@minus 3\p@
+    \belowdisplayshortskip 6\p@ \@minus 3\p@
+    \let\@listi\@listI
+  }%
+\fi
+\if@ll
+  \newcommand\tensize{\@setfontsize\tensize\@xpt{10\p@}}
+  \renewcommand\scriptsize{\@setfontsize\scriptsize\@viipt{8\p@}}
+  \renewcommand\tiny{\@setfontsize\tiny\@vpt{6\p@}}
+  \renewcommand\large{\@setfontsize\large\@xiipt{14\p@}}
+  \renewcommand\Large{\@setfontsize\Large\@xivpt{18\p@}}
+  \renewcommand\LARGE{\@setfontsize\LARGE\@xviipt{20\p@}}
+  \renewcommand\huge{\@setfontsize\huge\@xxpt{25\p@}}
+  \renewcommand\Huge{\@setfontsize\Huge\@xxvpt{30\p@}}
+\else
+  \def\tensize{\@setsize\tensize\@xpt{10\p@}}
+  \def\scriptsize{\@setsize\scriptsize{8\p@}\viipt\@viipt}
+  \def\tiny{\@setsize\tiny{6\p@}\vpt\@vpt}
+  \def\large{\@setsize\large{14\p@}\xiipt\@xiipt}
+  \def\Large{\@setsize\Large{18\p@}\xivpt\@xivpt}
+  \def\LARGE{\@setsize\LARGE{20\p@}\xviipt\@xviipt}
+  \def\huge{\@setsize\huge{25\p@}\xxpt\@xxpt}
+  \def\Huge{\@setsize\Huge{30\p@}\xxvpt\@xxvpt}
+\fi
+\normalsize
+
+% Section headings %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%need a 12 pt font size for section and abstract headings
+\def\secsize{\@setsize\secsize{12pt}\xiipt\@xiipt}
+
+%need a 11 pt font size for subsection headings
+\def\subsize{\@setsize\subsize{11pt}\xipt\@xipt}
+
+\def\section{\@startsection {section}{1}{\z@}{-10\p@ \@plus -4\p@ \@minus -2\p@}%
+{4\p@}{\secsize\bf}}
+
+\def\subsection{\@startsection {subsection}{2}{\z@}{-8\p@ \@plus -2\p@ \@minus -\p@}%
+{4\p@}{\subsize\bf}}
+
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@}{-8\p@ \@plus -2\p@ \@minus -\p@}%
+ {4\p@}{\subsecfnt}}
+
+
+% Zap space before \paragraph
+\def\paragraph{\@startsection {paragraph}{4}{\z@}{8pt plus 1pt minus 1pt}
+{-1em}{\normalfont\normalsize\bfseries}}
+
+\makeatother
+
+% Remove some of the space around figure captions
+\setlength\abovecaptionskip{-0.1in}
+%\setlength\belowcaptionskip{-0.1in}
+

@@ -1,0 +1,101 @@
+% Document template based on LNCS, adapted by Matt Welsh <mdw@cs.berkeley.edu>
+
+% This version is adapted to use PDFTEX to render to PDF directly. 
+% If you want to use dvi, you need to change any figures to use '.eps'
+% rather than '.pdf', and probably get rid of the hyperref package.
+
+\documentclass{article}
+\usepackage{program}
+\usepackage{acm-style10} % ACM proceedings formatting
+\usepackage{times}       % Use Adobe Times font set
+\usepackage{epsfig,twocolumn}
+\usepackage{url}
+\usepackage[english]{babel} % mdw: Required to get good hyphenation on RH6.0
+                            % (fixed in RH6.1)
+\usepackage{graphicx} 
+\usepackage{color}
+
+% DO NOT EDIT THE BELOW BLOCK OF CODE
+\def\dsp{\def\baselinestretch{1.10}}
+\dsp
+\newcommand{\XXXnote}[1]{{\bf\color{red} XXX: #1}}
+\setlength{\textheight}{9.25in}
+\setlength{\columnsep}{0.33in}
+\setlength{\textwidth}{7.4in}
+\setlength{\footskip}{0.0in}
+\setlength{\topmargin}{-0.25in}
+\setlength{\headheight}{0.0in}
+\setlength{\headsep}{0.0in}
+\setlength{\oddsidemargin}{-.45in}
+\setlength{\parindent}{1pc}
+\pagestyle{empty}
+\begin{document}
+\date{}
+
+%%%%%%%%%%%% THIS IS WHERE WE PUT IN THE TITLE AND AUTHORS %%%%%%%%%%%%
+
+% Title here
+\title{\ttlfnt Achieving Synchronicity in Wireless Sensor Networks}
+
+% Author names, affiliations, and e-mail below
+\author{{\aufnt  Uri Braun, Geetika Tewari, Geoffrey Werner-Allen} \\ 
+{\affaddr Harvard University} \\ 
+{\affaddr { \{uribraun, gtewari, werner\}}@eecs.harvard.edu}}
+
+\maketitle
+%\copyrightspace
+\thispagestyle{empty}
+
+%%%%%%%%%%%%%  ABSTRACT GOES HERE %%%%%%%%%%%%%%
+
+\subsection*{Abstract}
+\begin{small}
+Synchronicity can play an important role in facilitating tasks such as 
+power minimization, data logging, time synchronization, and event detection 
+in wireless sensor networks.
+Achieving synchronicity in sensor networks is challenging due to their
+characteristic limited node resources and communication bandwidth, node crystal frequency variations, 
+and lossy communication links across multi-hop networks.
+
+We investigate the accuracy and quality of synchronicity achieved in 
+a network of wireless sensors that is inspired from synchrony observed in swarms
+of biological systems such as that of synchronous fireflies or spiking of neurons.
+We emulate the pulse coupled integrate and fire model embedded
+in such biological swarms that is guaranteed to converge by the theory proposed
+by Mirollo and Strogatz~\cite{ms90}.
+Our work is motivated by a variety of recent work that demonstrates the effectiveness
+of this model in wireless sensor networks. 
+Hong, Cheow and Scaglione use this model to propose schemes for distributed time synchronization 
+and change detection in wireless sensors networks~\cite{hcs04,tsrbc03,ssp03}.
+More compelling is recent work by Lucarelli and Wang~\cite{lw04} that builds upon this, and defines 
+a class of models that can converge to a synchronized state based on purely local
+interactions amongst nodes in sensor networks, and thus lifts the all-to-all 
+communication requirement assumed in Mirollo and Strogatz's model and 
+implicit in~\cite{hcs04,tsrbc03,ssp03}
+
+In this paper, we design a variant of Mirollo and Strogatz's 
+model of synchronicity for wireless sensor networks that does not assume 
+all-to-all communication.
+We implement and evaluate our synchronicity algorithm on Motelab, a 38 node
+cluster of MicaZ sensors deployed in the Harvard Computer Science building,
+as well as on TOSSIM, a TinyOS mote simulator~\cite{hill00}.
+\end{small}
+
+%%%%%%%%%%%%%  BODY OF PAPER %%%%%%%%%%%%%%
+
+\input{intro.tex} 
+\input{background.tex}
+\input{fits.tex} 
+%\input{design.tex} 
+%\input{implementation.tex}
+\input{evaluation.tex}
+\input{discussion.tex}
+\input{conclusion.tex}
+
+%%%%%%%%%%%%% BIBLIOGRAPHY %%%%%%%%%
+\begin{small}
+\bibliographystyle{abbrv} \bibliography{paper}
+\end{small}
+
+\end{document}
+

@@ -1,0 +1,33 @@
+Firefly-Inspired Sensor Network Synchronicity with Realistic Radio Effects
+
+Synchronicity is a useful abstraction in many sensor network
+applications. Time synchronization, communication scheduling, and
+coordinated duty cycling can make use of a synchronicity primitive
+that achieves a tight alignment of individual node's firing phases. 
+Synchronicity is not the same as time synchronization: the latter 
+implies that nodes share a common notion of time that can be mapped 
+back onto a real-world clock, while the former only requires that 
+nodes agree on a firing period and phase.
+
+We present a distributed synchronicity algorithm, implemented on
+TinyOS-based motes, using a mathematical model originally proposed
+by Mirollo and Strogatz to explain how fireflies spontaneously
+synchronize. This model was recently extended by Lucarelli and Wang for
+multihop network topologies. However, previous work has not considered
+realistic effects of sensor network communication, in particular
+MAC delays and message loss. Coping with these realities requires a
+significant change to the theoretical model. We present the {\em reachback
+firefly algorithm} which accounts for this delay by allowing nodes
+to use information from previous excitation messages to adjust the
+future firing phase.  
+
+This paper makes three contributions. First, we present theoretical
+results that prove convergence of the reachback algorithm in simple
+cases. Second, we present extensive simulation results studying the
+effect of varying parameter choice, number of nodes, and network
+topology. Finally, we validate the simulation results on a real
+implementation on a 30-node sensor network testbed, demonstrating that
+our approach results in good synchronicity with realistic radio
+effects and network topologies.
+
+

@@ -1,0 +1,104 @@
+# 20 Apr 2005 : GWA : Makefile fragment showing how to include the FTSP
+#               sources for a given project.
+
+# 25 May 2005 : GWA : Figure out what we're compiling for.
+
+PLATAUX = micaz telos mica2 telosb
+PLATFORM := $(filter $(PLATAUX), $(MAKECMDGOALS))
+
+# 26 May 2005 : GWA : I don't like having this here, but what can you do?
+
+VUDIR = $(TOSDIR)/../contrib/vu/tos/
+
+# 20 Apr 2005 : GWA : Don't think we need this for Telos.
+
+# 26 May 2005 : GWA : This is in the original FTSP Makefiles but it seems to
+#               break things so it's elided here.
+
+#ifeq ($(PLATFORM),micaz)
+#  PFLAGS += -I$(VUDIR)/platform/avrmote -I$(VUDIR)/platform/mica2
+#endif
+
+# 25 May 2005 : GWA : FTSP specific defines.  Putting these in your Makefile
+#               allows you to experiment with parameters controlling FTSP
+#               behavior.
+
+# 20 Apr 2005 : GWA : Defining this tells FTSP to use the SysTime interface
+#               to do timing.  Originally this did not work for Telos but
+#               after wiring FTSP to the MicroTimer substitute I ported to
+#               Telos it seemed to.  Should be more rigorously tested, and
+#               for our application falling to the 32kHz external crystal
+#               (what happens when this is not defined) may be perfectly
+#               fine.
+#
+# PFLAGS += -DTIMESYNC_SYSTIME 
+
+# 25 May 2005 : GWA : How often to send synchronization messages (seconds).  
+#               Default 30.
+#
+# PFLAGS += -DFTSP_TIMESYNC_RATE=
+
+# 25 May 2005 : GWA : Max number of entries in the FTSP state table.
+#               Default 8.
+#
+#	PFLAGS += -DFTSP_MAX_ENTRIES=
+
+# 25 May 2005 : GWA : Number of sync periods before a node declares itself
+#               the root.
+#               Default 4.
+#
+# PFLAGS += -DFTSP_ROOT_TIMEOUT=
+
+# 25 May 2005 : GWA : Number of sync periods to ignore root messages after
+#               becoming the root.
+#               Default 4.
+# 
+# PFLAGS += -DFTSP_IGNORE_ROOT_MSG=
+
+# 25 May 2005 : GWA : Number of entries in the table before we consider
+#               ourself synchronized.
+#               Default 4.
+#
+# PFLAGS += -DFTSP_ENTRY_VALID_LIMIT=
+
+# 25 May 2005 : GWA : Number of entries in the table before we send
+#               synchronization messages.
+#               Default 3.
+#
+# PFLAGS += -DFTSP_ENTRY_SEND_LIMIT=
+
+# 25 May 2005 : GWA : Defines the time sync error at which point we clear the
+#               table.
+#               Default 100.
+#
+# PFLAGS += -DFTSP_ENTRY_THROWOUT_LIMIT
+
+# 26 May 2005 : GWA : Turn on Leds for debugging purposes.
+#               Default Off.
+#
+# PFLAGS += -DFTSP_USE_LEDS
+
+# 20 Apr 2005 : GWA : Originally the path to the VU TimeSync directory, but
+# 						  corrected to use our modified sources.
+
+PFLAGS += -I$(VOLCANOSRC)/TimeSync/
+
+# 20 Apr 2005 : GWA : This needs our Telos/MicaZ multi-timer as well.
+
+include $(VOLCANOSRC)/MultiTimer/Makefile.in
+
+# 20 Apr 2005 : GWA : Other stuff.
+
+PFLAGS += -I$(VOLCANOSRC)/lib/
+PFLAGS += -I$(VUDIR)/system/ClockTimeStamping
+ifeq ($(PLATFORM),telos) 
+    PFLAGS += -I$(VOLCANOSRC)/TimeSync/CC2420
+endif
+ifeq ($(PLATFORM),telosb) 
+    PFLAGS += -I$(VOLCANOSRC)/TimeSync/CC2420
+endif
+ifeq ($(PLATFORM),micaz) 
+		PFLAGS += -I$(VOLCANOSRC)/lib/DummySysTime/
+    PFLAGS += -I$(VOLCANOSRC)/TimeSync/CC2420
+endif
+

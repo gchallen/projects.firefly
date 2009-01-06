@@ -1,0 +1,24 @@
+XAxis: Firing function constant: -labelalign center -labeldist 0.5
+YAxis: Time to sync (sec): -labelalign center -labeldist 0.5 -grid -setmax 1526.0937125
+Key: right-(1.25*inch), top-(0.5*inch): : -keywidth 1.2 -keytitlealign right -textfont helvetica10 -fillcolor white -keyframe -elemwidth 0.1 -elemheight 0.1
+Options: -size 8x5 -labeldist 1.0 -textfont helvetica12 -labelfont helvetica12 -ticfont helvetica10 -keyframe 0 -valueangle 90 -valuefont helvetica10 -valuealign left -interpolation line -topmargin 0.2 -bottommargin 1.0 -rightmargin 0.2 -leftmargin 1.0 -plotspacing 5
+BeginCluster: FF 20: -xlabel 0.2
+  Bar: 44.342457: 16 nodes: -inkey
+  Bar: 88.277078: 64 nodes: -inkey
+  Bar: 90.1581762: 100 nodes: -inkey
+EndCluster
+BeginCluster: FF 50: -xlabel 0.2
+  Bar: 84.2469224: 16 nodes:
+  Bar: 159.968977: 64 nodes:
+  Bar: 145.71825: 100 nodes:
+EndCluster
+BeginCluster: FF 100: -xlabel 0.2
+  Bar: 108.1985754: 16 nodes:
+  Bar: 277.45223525: 64 nodes:
+  Bar: 248.6163408: 100 nodes:
+EndCluster
+BeginCluster: FF 500: -xlabel 0.2
+  Bar: 367.590533: 16 nodes:
+  Bar: 1199.481878: 64 nodes:
+  Bar: 1194.78405866667: 100 nodes:
+EndCluster

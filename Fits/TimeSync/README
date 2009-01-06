@@ -1,0 +1,13 @@
+Vanderbilt FTSP code.  Made some changes allowing this code to use our timers
+and will need to make more to enable flexibility in root node selection.
+
+FTSP exports two useful interfaces: GlobalTime, allowing the caller to
+convert a local timestamp to a global one on request the global time.
+TimeSyncInfo allows the caller to request a variety of internal information
+about the state of the synchronization acheived at a given point.
+
+exampleMakefile shows extra Makefile directives needed to use this code,
+which requires including parts of the VU contrib tree.  The Makefile
+directives also allow you to set the rate at which nodes running FTSP
+broadcast messages, which in turn affects the time for the system to
+stabilize.

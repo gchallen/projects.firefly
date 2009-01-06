@@ -1,0 +1,225 @@
+\documentclass{sig-alternate}
+
+\usepackage{url} 
+\usepackage{graphicx} 
+\usepackage{color}     
+
+%\usepackage[english]{babel} 
+% mdw: Required to get good hyphenation on RH6.0(fixed in RH6.1)
+%\usepackage{amsmath} % For the theory section (added by RADHIKA)
+%\usepackage[colorlinks,pdfpagemode=None]{hyperref} 
+
+\newcommand{\XXXnote}[1]{{\textcolor{red}{\bf XXX: #1}}}
+
+\begin{document}
+
+%% COPYRIGHT NOTICE
+
+\conferenceinfo{SenSys'05,}{November 2--4, 2005, San Diego, California, USA.}
+\CopyrightYear{2005}
+\crdata{1-59593-054-X/05/0011}
+
+%% TITLE AND AUTHORS
+
+\title{Firefly-Inspired Sensor Network Synchronicity\\ with Realistic Radio Effects}
+\author{
+Geoffrey Werner-Allen, Geetika Tewari, Ankit Patel, Matt Welsh, Radhika Nagpal\\
+\affaddr{Division of Engineering and Applied Sciences} \\
+\affaddr{Harvard University} \\
+\affaddr{\{werner,gtewari,abpatel,mdw,rad\}@eecs.harvard.edu}
+}
+
+\maketitle
+
+%%%%%%%%%%%%%  ABSTRACT GOES HERE %%%%%%%%%%%%%%
+
+\begin{abstract}
+
+Synchronicity is a useful abstraction in many sensor network
+applications. Communication scheduling, coordinated duty cycling, and
+time synchronization can make use of a synchronicity primitive that
+achieves a tight alignment of individual nodes' firing phases. In this
+paper we present the {\em Reachback Firefly Algorithm (RFA)}, a
+decentralized synchronicity algorithm implemented on TinyOS-based
+motes. Our algorithm is based on a mathematical model that describes
+how fireflies and neurons spontaneously synchronize. Previous work has
+assumed idealized nodes and not considered realistic effects of sensor
+network communication, such as message delays and loss. Our algorithm
+accounts for these effects by allowing nodes to use delayed
+information from the past to adjust the future firing phase. We
+present an evaluation of RFA that proceeds on three fronts. First, we
+prove the convergence of our algorithm in simple cases and predict the
+effect of parameter choices. Second, we leverage the TinyOS simulator
+to investigate the effects of varying parameter choice and network
+topology. Finally, we present results obtained on an indoor sensor
+network testbed demonstrating that our algorithm can synchronize
+sensor network devices to within 100 $\mu$sec on a real multi-hop
+topology with links of varying quality.
+
+\end{abstract}
+
+% (note: old abstracts are at the end of the paper)
+
+%% CATEGORIES, TERMS and KEYWORDS
+
+\category{C.2}{Computer-Communication Networks}{Network Architecture
+and Design, Distributed Systems}
+
+\terms{Algorithms, Design, Experimentation, Theory}
+
+\keywords{Synchronization, Wireless Sensor Networks,
+Biologically Inspired Algorithms, Pulse-Coupled Oscillators}
+
+
+%%%%%%%%%%%%%  BODY OF PAPER GOES HERE %%%%%%%%%%%%%%
+
+% note by RAD: I have added some \newpage commands
+% because of problems with widowed sections
+
+\newpage
+\input{intro.tex}	%mdw/rad
+\input{background.tex} 	%mdw
+\input{algorithm.tex} 	%rad
+\input{theory.tex} 	%ankit
+\input{metrics.tex}
+\newpage
+\input{simulations.tex} %geetika
+\input{motes.tex} 	%gwa
+\input{conclusions.tex} %all
+
+%%%%%%%%%%%%%  THIS IS WHERE THE BIBLIOGRAPHY GOES %%%%%%%%%
+
+%% \def\baselinestretch{0.92}
+%% \begin{footnotesize}
+%% \setlength{\itemsep}{2in}
+\bibliographystyle{abbrv} 
+\bibliography{sensys}
+%\end{footnotesize}
+
+\end{document}
+
+
+
+%% OLD ABSTRACTS
+
+%% Synchronicity is a useful abstraction in many sensor network
+%% applications. Time synchronization, communication scheduling, and
+%% coordinated duty cycling can make use of a synchronicity primitive
+%% that achieves a tight alignment of individual node's firing phases. 
+%% Synchronicity is not the same as time synchronization: the latter 
+%% implies that nodes share a common notion of time that can be mapped 
+%% back onto a real-world clock, while the former only requires that 
+%% nodes agree on a firing period and phase.
+
+%% We present a distributed synchronicity algorithm, implemented on
+%% TinyOS-based motes based on a mathematical model originally proposed
+%% by Mirollo and Strogatz explaining how fireflies spontaneously
+%% synchronize. This model was recently extended by Lucarelli and Wang for
+%% multihop network topologies. However, previous work has not considered
+%% realistic effects of sensor network communication, in particular
+%% MAC delays and message loss. Coping with these realities requires a
+%% significant change to the theoretical model. We present the {\em reachback
+%% firefly algorithm} that accounts for this delay by allowing nodes
+%% to use information from previous firing messages to adjust their
+%% next firing time.
+
+%% This paper describes our algorithm and presents an evaluation that
+%% proceeds on three fronts.  First, we prove the convergence of our modified
+%% algorithm, verifying that the changes that we made do not affect its
+%% fundamental properties.  
+%% \XXXnote{MDW: I have no idea what the last sentence means.}
+%% Second, we leverage TOSSIM, the TinyOS simulator, to
+%% investigate the effects of varying parameter choice and network topology.
+%% Finally, we present results obtained on an indoor sensor
+%% network testbed demonstrating that our algorithm can synchronize sensor
+%% network devices to within 100 $\mu$sec with a real multi-hop topology.
+
+%% \XXXnote{Begin GWA Abstract}
+
+%% In a seminal paper in the field of biologically-inspired algorithms, Mirollo
+%% and Strogatz proposed a pulse-coupled oscillator model to explain the
+%% emergence of synchronous action across large collections of agents each
+%% possessing only limited local information.  Work presented last year by
+%% Lucarelli and Wang relaxed one troublesome requirement in the original paper
+%% by proving convergence over arbitrary multi-hop topologies.  Given that the
+%% Strogatz algorithm aims to imitate a collection of agents each possessing
+%% limited information and processing power, such as a swarm of fireflies or a
+%% group of cardiac cells, it seems readily applicable to the world of sensor
+%% networks.  However, absence of efficient floating point arithmetic and
+%% unpredictable communication latencies are two examples of hardware-introduced
+%% vagarities requiring modifications to the algorithm.
+
+%% This paper describes our
+%% varied algorithm and presents an evaluation that proceeds on three
+%% fronts.  First, we prove the convergence of our modified algorithm, verifying
+%% that the changes that we made do not affect its fundamental properties.
+%% Second, we leverage TOSSIM, the TinyOS simulator, to investigate the effects
+%% of varying parameter choice and network topology.  Last, we present results
+%% obtained by deploying our algorithm on a real sensor network testbed
+%% consisting of thirty MicaZ nodes demonstrating the level of synchronicity
+%% acheivable on real hardware.
+
+%% \XXXnote{End GWA Abstract}
+
+%% We present an implementation of synchronicity on motes, based on a
+%% mathematical model originally proposed by Mirollo and Strogatz to
+%% explain how fireflies or pacemaker cells can spontaneously synchronize
+%% their firing. This model was recently extended by Lucarelli and Wang
+%% for multi-hop network topologies. The theoretical work differs
+%% significantly from actual mote hardware in that it relies on messages
+%% being recieved instantaneously. However, due to wireless contention,
+%% messages are delayed and this delay cannot be predicted in advance.
+%% We devised a modified algorithm, called the "reachback firefly
+%% algorithm", which accounts for this delay by having nodes accumulate
+%% messages and use information from a previous cycle to adjust future
+%% firing. In this paper we present three main results: (1) We present
+%% theoretical results that prove convergence for the reachback scheme in
+%% simple cases, and predict the impact of parameter choice (2) We
+%% present extensive TOSSIM simulation results that investigate the
+%% effect of varying parameter choice, numbers of nodes, and node
+%% topology (3) We present results from our implementation on a mote
+%% deployment to demonstrate the time and level of synchronicity achieved
+%% on real hardware.
+
+
+%%%%%%%%%%%%%  SKELETON OF THE PAPER   %%%%%%%%%%%%%%
+
+%% 1. Abstract [ALL, DUE TOMORROW]
+
+%% 2. Introduction [MATT/RAD]
+%%    - why synchronicity is important
+%%    - synchronicity in biology 
+
+%% 3. Related Work [MATT]
+%%    - attempts to implement in ad-hoc networks
+%%    - other time sync protocols?
+   
+%% 4. Firefly inspired Synchronization Algorithm [RAD]
+%%    - Mirollo and Strogatz model
+%%    - Differences between theory and practice
+%%    - Our Modified Firefly-inspired Algorithm
+
+%% 5. Theoretical Results [ANKIT]
+%%    - Proof of convergence for n=2
+%%    - Proof of relation between convergence rate and epsilon
+%%    - Intuition about choice of epsilon
+
+%% 6. Simulation Results [GEETIKA]
+%%    - explanation of what TOSSIM models and what it does not (justify)
+%%      especially with regards to radio model.
+%%    - Scatter plot of phase vs time for one example
+%%    - Time to sync and Group Spread for
+%%       - all-to-all, varying n and epsilon
+%%       - grid, varying nxn and epsilon
+%%       - mote deployment topology, and epsilon
+%%    - Discussion of how well the data matches the theory.
+
+%% 7. Motelab Results [GWA]
+%%    - explanation of setup and use of FTSP to timestamp
+%%    - For a given (good) epsilon choice
+%%        - Graph of Phase vs time
+%%        - Distribution of Phase offsets 
+%%          (perhaps broken down by number of hops)
+
+%% 8. Discussion [ALL]
+%% 9. Bibliography

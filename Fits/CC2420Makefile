@@ -1,0 +1,8 @@
+COMPONENT=Fits
+DEFAULT_LOCAL_GROUP=0x44
+include ${TOSDIR}/../tools/make/Makerules
+PFLAGS += -DTOSSIMCC2420
+PFLAGS += -I${TOSDIR}/lib/CC2420Radio -I${TOSDIR}/../beta/TOSSIM-CC2420
+java:
+	mig java -java-classname=FitsMsgT FitsMsg.h FitsMsgT -o FitsMsgT.java
+	javac *.java

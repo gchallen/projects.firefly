@@ -1,0 +1,35 @@
+\section{Conclusions and Future Work}
+\label{sec:conclusion}
+
+Designing a synchronicity scheme for wireless sensors
+is particularly challenging in light of the resource and computation 
+constraints on these devices. In this paper we
+designed and implemented FICA, a firefly-based synchronicity mechanism 
+for a wireless sensor platform.
+
+A firefly based synchronicity scheme has several salient features.  
+The underlying algorithm derived from Mirollo and Strogatz's original model 
+of pulse-coupled integrate and fire dynamics is simple to implement and 
+requires little parameter tweaking.  On the other hand, the evaluations
+in this paper expose several weaknesses of this scheme. 
+Our experiments indicate the sensitivity of our synchronicity scheme 
+to factors such as the firing function constant and number of nodes in the network.
+While the impact of node topology on the quality of synchronicity attained
+is not surprising, it exposes yet another vulnerability of our scheme.
+Furthermore, the scheme requires constant message exchange in the form 
+of sending and receiving pulses, and makes strong demands on
+bandwidth and energy, resources which are extremely constrained on sensor nodes.
+Finally, it is not immediately clear how to make a number of pulse-coupled 
+nodes synchronize to an external timescale such as GPS. This functionality,
+if possible, could serve many different applications.
+
+There are several avenues of future work that could be pursued. 
+Our primary future goal is to resolve the issues we currently face with implementing
+FICA on MicaZ nodes in Motelab, and be able to test the quality of our synchronicity
+scheme in this real world setting.
+It would be useful to perform a detailed study of the power requirements of 
+implementing our synchronicity mechanism on wireless sensors and 
+to quantitatively evaluate its operational demands.
+
+
+

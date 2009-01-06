@@ -1,0 +1,60 @@
+XAxis: Firing function constant: -labelalign center -labeldist 0.5
+YAxis: Percentage Synchronized (%): -labelalign center -labeldist 0.5 -grid -setmax 103
+Key: right-(1.25*inch), top-(0.5*inch): : -keywidth 1 -keytitlealign right -textfont helvetica10 -fillcolor white -keyframe -elemwidth 0.1 -elemheight 0.1
+Options: -size 8x5 -labeldist 1.0 -textfont helvetica12 -labelfont helvetica12 -ticfont helvetica10 -keyframe 0 -valueangle 90 -valuefont helvetica10 -valuealign left -interpolation line -topmargin 0.2 -bottommargin 1.0 -rightmargin 0.2 -leftmargin 1.0 -plotspacing 5
+BeginCluster: FF 20: -xlabel 0.2
+  Bar: 100: 16 nodes: -inkey
+  Line: 5.5, 100, 5.5, 100:
+  Line: 5.1, 100, 5.9, 100:
+  Line: 5.1, 100, 5.9, 100:
+  Bar: 100: 64 nodes: -inkey
+  Line: 6.5, 100, 6.5, 100:
+  Line: 6.1, 100, 6.9, 100:
+  Line: 6.1, 100, 6.9, 100:
+  Bar: 100: 100 nodes: -inkey
+  Line: 7.5, 100, 7.5, 100:
+  Line: 7.1, 100, 7.9, 100:
+  Line: 7.1, 100, 7.9, 100:
+EndCluster
+BeginCluster: FF 50: -xlabel 0.2
+  Bar: 100: 16 nodes:
+  Line: 13.5, 100, 13.5, 100:
+  Line: 13.1, 100, 13.9, 100:
+  Line: 13.1, 100, 13.9, 100:
+  Bar: 100: 64 nodes:
+  Line: 14.5, 100, 14.5, 100:
+  Line: 14.1, 100, 14.9, 100:
+  Line: 14.1, 100, 14.9, 100:
+  Bar: 80: 100 nodes:
+  Line: 15.5, 80, 15.5, 80:
+  Line: 15.1, 80, 15.9, 80:
+  Line: 15.1, 80, 15.9, 80:
+EndCluster
+BeginCluster: FF 100: -xlabel 0.2
+  Bar: 100: 16 nodes:
+  Line: 21.5, 100, 21.5, 100:
+  Line: 21.1, 100, 21.9, 100:
+  Line: 21.1, 100, 21.9, 100:
+  Bar: 80: 64 nodes:
+  Line: 22.5, 80, 22.5, 80:
+  Line: 22.1, 80, 22.9, 80:
+  Line: 22.1, 80, 22.9, 80:
+  Bar: 100: 100 nodes:
+  Line: 23.5, 100, 23.5, 100:
+  Line: 23.1, 100, 23.9, 100:
+  Line: 23.1, 100, 23.9, 100:
+EndCluster
+BeginCluster: FF 500: -xlabel 0.2
+  Bar: 40: 16 nodes:
+  Line: 29.5, 40, 29.5, 40:
+  Line: 29.1, 40, 29.9, 40:
+  Line: 29.1, 40, 29.9, 40:
+  Bar: 80: 64 nodes:
+  Line: 30.5, 80, 30.5, 80:
+  Line: 30.1, 80, 30.9, 80:
+  Line: 30.1, 80, 30.9, 80:
+  Bar: 60: 100 nodes:
+  Line: 31.5, 60, 31.5, 60:
+  Line: 31.1, 60, 31.9, 60:
+  Line: 31.1, 60, 31.9, 60:
+EndCluster

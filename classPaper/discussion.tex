@@ -1,0 +1,115 @@
+\section{Discussion}
+\label{sec:discussion}
+
+In the course of developing FICA we have encountered a number of difficulties
+inherent in moving distributed algorithms from mathematical simulation on to
+realistic platforms.  Additionally, we have had time to track the
+always-interesting dynamics of FICA over a large parameter space.  This
+section collects a set of disparate remarks and observations we made during
+the course of development and analysis.
+
+\subsection{Sensor Node Hardware Limitations and Changes}
+
+Any algorithm aiming for microsecond-level accuracy in wireless sensor
+networks has aligned its fate with the capabilities of the underlying
+harwarde platform.  Low-level hardware changes can cause large problems.
+Two examples from FICA illustrate this, and elucidate the consequences of
+subtle differences between the Mica2, MicaZ, and Telos ''motes''.
+
+First, as discussed earlier, when operating on MicaZ's or Telos FICA is
+forced to send two radio messages corresponding to each fire.  The receival
+of the first message marks the fire time in the receiver's context, but it is
+the second message that contains the sender's delay that allows the receiver
+to extrapolate backwards in it's own time frame.  If deployed on Mica2's,
+however, FICA could send only one message, since the older Chipcon CC1000
+radio stack maintained the contents of the packet in memory which allowed
+rewriting up to the moment of, and even during, message transfer.  The newer,
+in most ways better CC2420 radios operate at a packet level.  Since message
+contents are copied into the radio buffer at send time they cannot modified
+during flight, an interesting consequence of moving the software/hardware
+boundary.
+
+Second, FICA requires accurate event timestamping.  On the MicaZ and Mica2,
+which share the ATMega128 processor, counters can be run up to the clock
+speed of ~8MHz allowing fine-grained precision.  Unfortunately the HP chips
+used in the Telos ''motes'' do not appear to have cycle counters that can run
+at this speed, an omission surely to be noticed by those developing time
+synchronization algorithms.
+
+\subsection{Effects of Additivity}
+
+As discussed earier, in response to the 2-group convergences seen in early
+simulations we modified our implementation to elimininate additivity.  By
+this we refer to treating a group of firing events clustered close-enough
+together in time as a single fire.  At the time we thought that this was a
+reasonable solution and a workaround to the discretized time present on our
+hardware platform that differs from the continuous time presented in the
+Lucarelli and Strogatz models.
+
+Later, after running a large number of simulations with this no-addivity
+codebase and seeing many cases of non-convergence, we began to suspect that
+the earlier 2-group solutions that we had seen were the result of either an
+inappropriate choice of our firing function constant (which is directly tied
+to the delta of the Strogatz model, required to be small compared with the
+firing interval) or a change to the dynamics of the model introduced by not
+processing events continuously.  After reintroducing the additive effects we
+were able to run a small set of simulations with large numbers of nodes and
+more reasonable firing function constants which produced the very encouraging
+results found graphed in this paper.
+
+\subsection{Challenges Evaluating on MoteLab}
+
+While we had original planned to deploy and evaluate FICA on MoteLab we found
+the second half of that exceedingly difficult to do.  Although MoteLab is a
+powerful tool for doing many types of sensor network experimentation it was
+difficult to design a simple experiment that would allow us to verify the
+correct functioning of the FICA system.
+
+Early investigations conducted on MicaZ's were done with the nodes in visual
+range, allowing inspection of the leds blinked on firing events to suffice as
+evidence of synchronicity.  With 30 nodes sprinkled throughout offices and
+labs, MoteLab obviously does not lend itself to such an approach.  Having
+each node log its firing times is also untenable as the clock skew across
+nodes would make it impossible to ascertain synchronicity after a brief
+period of time.
+
+Our initial approach was to remove a certain set of nodes from the experiment
+to serve as passive listeners.  These nodes ran a modified version of the
+{\tt TOSBase} code in the TinyOS tree.  When a passive listener
+receives a message it timestamps it low in the radio stack.  These times are
+logged to the database and should allow the firings of nearby nodes to be
+reconstructed viewed through the receiver's time frame.
+
+Though seemingly plausible the approach described above does not work well,
+for a variety of reasons, mainly due to difficulties introduced
+in post-processing by lossy links and multi-path effects.  We will continue
+to develop our post-processing tools to try and deal the much messier data
+produced by MoteLab, but other solutions may be possible.  One approach may
+be to, in a seperate experiment, build up a model of the clock skew of each
+node in our testing array.  If the clock frequency is relatively stable on
+each node over time, such a model would allow data collected on each node to
+be converted into a global time scale and thus compared with other nodes.
+Another out-of-band solution would be backchannel boards capable of
+timestamping radio events without disturbing node operation.
+
+\subsection{Reducing Resource Usage}
+
+Mindful that any synchonicity system will serve as a tool for other software
+components in a sensor network application doing real work, we have begun to
+consider ways to reduce the bandwidth and energy consumption of FICA.
+
+Currently FICA sends radio packets and does some processing each second.  In
+networks attempting to collect and move data the bandwidth overhead is
+especially prohibitive.  One way to reduce the bandwidth consumed by FICA
+would be to reduce the firing frequency.  Using the known properties of the
+node oscillators and given the synchronicity requirements of a given
+application an appropriate minimum firing frequency could be calculated.
+
+Unfortunately reducing the firing frequency has the side effect of increasing
+the time to synchronization, which may be unacceptable in systems expected to
+deploy and respond to topology changes quickly.  One possible solution is to
+have the network itself recognize when it has achieved a given level of
+synchronicity and throttle down the firing frequency.  Another, somewhat
+orthogonal solution would be to let individual nodes choose to skip firing
+events, perhaps again based on a local perception of how in step they were
+with their neighbors.

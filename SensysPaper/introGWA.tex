@@ -1,0 +1,69 @@
+\section{Introduction}
+
+Computer scientists have always looked to nature for inspiration.
+Researchers studying distributed systems have long envied and attempted to
+duplicate the fault-tolerance, lack of central control, and global
+cooperation acheived in nature's systems.  Those of us studying sensor
+networks also have every reason to be envious.  Designing software
+coordinating the output of a collection of computation and communation
+limited devices frequently feels as frustrating as orchestrating the activity 
+of a colony of stubborn ants, or guiding a school of uncooperative fish.  And
+yet ant colonies complete difficult tasks, fish flock travelling through the
+sea, and along the banks of rivers in (somewhere I can't
+remember) swarms of fireflies stretching for miles pulse in perfect unison.
+
+Synchronicity is a powerful primitive to apply to the world of sensor
+networks.  Evincing its utility requires distinguishing {\em synchronicity}
+from {\em time synchronization}.  We define synchronicity as the ability to
+organize {\em collective action} across a sensor network.  In contrast, time
+synchronization or stamping is the ability to create a meaningful global time
+base accesible to all sensor nodes in a network.  The two primitives are
+independently useful.  Nodes within a sensor network may want compare the
+time that they detected some event for beamforming or distributed signal
+detection.  This task requires time stamping, but not collective action.
+Other nodes may want to arrange communication schedules to permit efficient
+duty cycling.  This task requires collective action, but not time stamping.
+The two primitives are also complementary: nodes with access to a common time
+base can schedule collective action, and, conversely, nodes who can arrange
+collective action can establish a meaningful network-wide time base.  This
+work is orthogonal to the large body of work in sensor networks concerning
+time synchronization.  We address the utility and feasibility of
+synchronicity.
+
+Strogatz and Mirollo were the first to propose a mathematical model
+explaining how fireflies and cardiac cells acheive stunning degrees of
+synchronicity.  Recent work by Lucarelli and Wang relaxed one of the
+assumptions in the original work, proving convergence across arbitrary
+multi-hop topologies.  Our work is both a natural extension of and entirely
+complementary to these earlier ideas.  In order to make theoretical arguments
+the existing work cannot consider important vagaries of real hardware.  Both
+Strogatz and Lucarelli assume instantaneous communication over perfect
+bidirectional links, identical oscillators present on every node, and
+arbitrary-precision floating-point arithmetic.  Each of these assumptions
+falls down when faced with real sensor network devices.  Wireless devices
+require medium access control which introduces significant communication
+latencies.  Links between nodes are not perfect, not symmetric, and fluctuate
+over time.  Crystal impurities cause noticeable skew between oscillators.
+And the absense of floating-point units on typical sensor network device
+processors renders floating-point calculations either computationally
+expensive or impossible.
+
+As the hardware exigencies above prove implementing Strogatz's algorithm
+unchanged difficult if not impossible, we made a significant change to the
+original theoretical model, which we present as the {\em reachback Firefly
+algorithm}.  We will show that our simple change allows reasonable
+communication delays to be accomodated and processing amortized.
+
+We evaluate our algorithm on three fronts.  First we prove convergence of our
+modified algorithm in simple cases, verifying that our change did not affect
+the original algorithm's attractive properies.  Next we leverage TOSSIM, the
+TinyOS simulator.  Using TOSSIM allows us to collect a large amount of data
+exploring the parameter space across a wide range of network sizes and
+topologies.  Finally we validate the simulator results by deploying our
+implementation on a large sensor network testbed, demonstrating our algorithm
+robust when faced with real radios and topological effects.  Our results show
+that such a decentralized approach can provide reasonable levels of
+synchronicity while incurring low overhead.
+
+Our paper is organized as follows...
+\XXXnote{MDW and RAD}

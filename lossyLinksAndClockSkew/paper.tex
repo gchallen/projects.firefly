@@ -1,0 +1,38 @@
+\documentclass[10pt]{article}
+
+\usepackage{graphics}
+\usepackage{times,psfig}
+\usepackage{times}  % Use Adobe Times font set
+\usepackage{epsfig}
+\usepackage{url}
+\usepackage[english]{babel} % mdw: Required to get good hyphenation on RH6.0
+
+                            % (fixed in RH6.1)
+\usepackage{graphicx} 
+\usepackage{color}  
+\newcommand{\figlab}[1]{\label{fig:#1}}
+
+
+\oddsidemargin  0   in
+\evensidemargin 0   in
+\topmargin     -0.5 in
+\textwidth      6.5 in
+\textheight     9.0 in
+
+\title{Study of Changes to TOSSIM: The TinyOS Sensor Network Simulator}
+\author{Geetika Tewari}
+\date{August, 2005}
+
+\begin{document}
+\maketitle
+%This paper examines the impact of links with packet level loss on TOSSIM, the TinyOS sensor network simulator.
+
+
+\section{ Impact of Lossy Links}
+\input{lossyLinks}
+%%\section{ Impact of Clock Drift}
+%%\input{clockDrift}
+\section{Appendix}
+\input{appendix}
+
+\end{document}

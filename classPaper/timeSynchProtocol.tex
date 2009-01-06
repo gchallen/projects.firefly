@@ -1,0 +1,39 @@
+
+\section{A Firefly-Based Time Synchronization Protocol}
+
+\subsection{Salient Features}
+Our goal is to design a robust and scalable time synchronization scheme
+based on the pulse-coupled oscillatory behavior observed in synchronized
+fireflies for wireless sensor networks and evaluate its effectiveness
+on a testbed of MicaZ sensor motes. 
+In designing such an algorithm, {\bf Firefly Inspired Time Synchronization (FITS)}, 
+our goals are:
+\begin{enumerate}\addtolength{\itemsep}{-0.5\baselineskip}
+\item {\bf Topology independence} : Should handle all kinds of partitioning
+in sparse ad hoc networks.
+\item {\bf Precision} : Ideally our algorithm will achieve the level of
+precision attained by existing time synchronization protocols and thus the
+error in time should be at most on the order of microseconds.
+\item {\bf Scalability} : Should perform equally well in MoteLab, as it does 
+with four sensors. 
+\item {\bf Performance} : Low message overhead.
+\end{enumerate}  
+
+
+\subsection{From Synchronicity to Time Synchronization}
+Synchronicity is the major challenge in time synchronization. Once all
+motes fire together at regular intervals, the tasks of generating a
+common timebase because significantly simplified. Moreover, the
+majority of the error in time synchronization results from errors in
+achieving this synchronicity -- or universal pulse.
+
+Assuming the time synchronicity -- global heartbeat -- is good
+enough, the task of providing time synchronization is nearly
+trivial. All motes can use their global heartbeat to measure course
+grained time. If necessary they could then use their local clocks for
+intervals smaller than the standard pulse width. Additionally, it
+should be relatively straightforward to translate between a reference
+timebase and the collective FITS time. A could have knowledge of both
+times by participating in FITS while also accessing the reference
+timebase. This node should then be able to translate between the two
+times.

@@ -1,0 +1,103 @@
+\section{Comparison to Other Methods}
+
+Compared to algorithms such as RBS, TPSN and FTSP\cite{rbs,ftsp,tpsn},
+the firefly-inspired algorithm represents a radically different
+approach. All of the nodes behave in a simple and identical
+manner. There are no special nodes, such as the root in TPSN or
+reference node in RBS, that need to elected. A node does not maintain
+any per-neighbor or per-link state; in fact it is completely agnostic
+to the identity of its neighbors. The algorithm remains the same even
+if the topology is multi-hop. There are no network-level
+datastructures, such as the spanning tree in TPSN, that must be
+re-established in case of topology change. As a result of these
+properties, the algorithm is {\em implicitly robust to the
+disappearance of nodes and links}. Lucarelli et al \cite{lucarelli04}
+have shown that the algorithm works on time-varying topologies; our
+testbed results show that the algorithm performs well even with
+asymmetric, lossy links. The inherent adaptive nature of such
+algorithms is one of the main attractions of biologically-inspired
+approaches.
+
+%% The goal of this paper was to determine whether such algorithms, based
+%% on simple distributed control principles, were feasible in a the
+%% wireless sensor network arena.
+
+Nevertheless, it is not yet clear whether such an algorithm will be
+competitive to algorithms such as TPSN and FTSP, in terms of accuracy
+and overhead, and much work remains to be done. In terms of accuracy,
+RFA achieves ~100 $\mu$sec which is significantly less than the
+reported 10 $\mu$sec accuracy of FTSP, although as discussed before it
+is difficult to make a clear comparison because of the errors caused
+by using FTSP as our evaluation clock. We believe that the accuracy
+can be increased to tens of microseconds by eliminating errors in our
+evaluation methodology and by using a better optimized MAC-layer delay
+estimation (as used in FTSP \cite{ftsp}).  However beyond that, the
+accuracy will still be limited by clock skew, as discussed in Section
+\ref{performance-evaluation}. We intend to investigate models that
+synchronize both phase and frequency, which would eliminate errors
+cause by clock skew. A second shortcoming of RFA is that the
+communication overhead is high. In particular, we choose $T=1$ sec,
+unlike FTSP which has a time period of 30 seconds. Assuming one could
+compensate for clock skew, the main limit on $T$ is the time taken to
+synchronize from startup. RFA takes approximately 200 time periods to
+synchronize on MoteLab, which is significantly more than the diameter
+of the network. On the other hand, the system recovers quickly from
+small dispersive events. One option would be to use a simple
+mechanism, such as an initial flood, to bring all nodes to within a
+small phase difference quickly. Then RFA could operate at a much lower
+frequency to tighten the accuracy and maintain synchronicity. A
+different option is to allow nodes to asynchronously backoff, or
+increase, their time period in multiples of $T$ depending on whether
+they observe many out-of-phase firing events in their
+neighborhood. Thus nodes would self-adjust the overhead.
+
+
+%% Besides the above limitations, our algorithm also has some other
+%% unique challenges, especially in terms of analysis. While the
+%% algorithm is exceedingly simple, the analysis of its effect in a
+%% distributed setting is not. Sophisticated mathematics is required to
+%% prove convergence in a network \cite{lucarelli04} and it is difficult
+%% to specify simple back-of-the envelop calculations on multi-hop
+%% convergence time. Nevertheless, the inherent fault-tolerant and
+%% adaptive quality of the algorithm is very attractive, and in that
+%% respect it shares many characteristics with well-established
+%% algorithms such as Ethernet/CSMA that are also based on simple node
+%% adaptation strategies.
+
+
+
+%% However, a much more difficult source of error is the
+%% constant error introduced by clock skew. The nodes assume a default
+%% fixed frequency, however because of clock skew their actual time
+%% periods may differ by as much as .1 msec. Thus even if two nodes
+%% completely agree on the phase, in the next time period they will fire
+%% at different times. This causes the algorithm to constantly be
+%% adjusting and in the end the effective frequency is in fact lower than
+%% 1 sec. This lack of true agreement on frequency adds a constant error
+%% to the process, and it is suggestive that our current accuracy of 100
+%% microseconds is comparable to the expected skew on the clocks. One
+%% approach to compensate would be to use models of distributed
+%% synchronization that synchronize both phase and frequency - such as
+%% models of how humans synchronize clapping [cite].
+
+\section{Conclusions and Future Work}
+
+In this paper we have presented a decentralized algorithm for
+synchronicity, based on a mathematical model of synchronicity achieved
+by biological systems. Our results show that even though the
+theoretical models make simplifying assumptions, this technique still
+works well and robustly in the face of realistic radio effects and
+hardware limitations. In particular, we modified the algorithm to deal
+with communication latencies, but it still achieved synchronicity
+reliably and showed predictable behavior in relation to parameter
+choice. In the future we intend to study in detail how lossy links,
+clock skew and topology parameters affect the model. A detailed study
+of the robustness of the system will also help us better understand
+whether the adaptive and robust behavior of biological systems can be
+leveraged to design robust algorithms for sensor networks.
+
+\section{Acknowledgements}
+
+Nagpal is supported by a Microsoft Faculty Fellowship, Patel is
+supported by a NSF graduate Fellowship. We also thank Uri Braun, who
+worked on initial stages of the project.

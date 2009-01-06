@@ -1,0 +1,20 @@
+
+
+README for Tools
+-----------------
+
+Upper Layer: Java, TOSSIM, Motelab
+
+. convertMotelab.pl: Parses motelab output
+. convertTOSSIM.pl : Parses TOSSIM output
+
+Lower level processing tools:
+
+. processSkew.pl: Computes the clock skew and spits out in gnuplot format
+. processEvents.pl: Looks at events, and spits out frequency range. Done 
+                    for single hop context. 
+                    Creates one file per node.
+
+. doExperiments.pl: Runs experiments with different ignore periods.
+. fitData.pl: Fits a line to the data (y= mx + c, computes m, c).
+. fixEarlyData.pl: Fixed the earlier data.

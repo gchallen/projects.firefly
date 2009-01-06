@@ -1,0 +1,106 @@
+authors/contact:
+    brano kusy, kusy@isis.vanderbilt.edu 
+    miklos maroti 
+
+directory shortcuts: $cvs = tinyos-1.x directory of std tinyos release
+                     $vu = $cvs/contrib/vu
+
+further information: 
+    - algorithm/evaluation: our sensys'04 paper
+    - timestamping: doc files for $cvs/tos/platform/mica2/SysTimeStamping, or 
+        $vu/system/ClockTimeStamping
+    - how to deploy: $vu/apps/TestTimeSync docs
+
+supported platforms: mica2, mica2dot, 
+    telso(only 32kHz clock available),
+    micaz(only 1MHz clock available), 
+    mica(used to work, not supported any longer)
+    
+description: 
+------------ 
+TimeSyncC component provides continuous global time service: 
+(1)global time is local time of the elected leader of the network - the root and 
+other nodes synchronize to this global time. 
+(2)this is flooding algorihtm: each node bcasts timesync msgs once per 30 secs; 
+(3)algorithm compensates for the clock drift wrt clock crystal of the root: each 
+node keeps a certain number of msgs in regression table and (re)calculates skew 
+of its local time vs global time when a new timesync msg comes. 
+(4)two different clock sources can be used with TimeSyncC component: CPU 
+crystal(7.37MHz) or external crystal(32kHz), this is allowed by separation of 
+timestamping mechanism from timesync
+
+
+interfaces:
+-----------
+StdControl: interface to start/stop time-sync, init() needs to be called
+GlobalTime: provides methods to obtain global time in network, and means to
+            transform global time to local time and vice versa
+TimeSyncInfo: provides accessors to internal time-sync information
+TimeSyncMode: user/timer based sending of time-sync msgs
+TimeSyncNotify: coordinator interfaces, provide hooks to time-sync module
+
+testing:
+--------
+***see contribu/vu/apps/testtimesync directory for more details.***
+
+parameters: 
+----------- 
+settable in Makefile:
+TIMESYNC_RATE - period (seconds) in which each node broadcasts time sync msg 
+TIMESYNC_SYSTIME - specify wether external crystal or CPU is used for timing
+TIMESYNC_DEBUG - multihop is simulated in software, see ReceiveMsg.receive() 
+event in TimeSyncM and TestTimeSync application
+
+sample use in Makefile:
+  PFLAGS := $(PFLAGS) -DTIMESYNC_SYSTIME -DTIMESYNC_RATE=20 -DTIMESYNC_DEBUG
+            
+wiring:
+-------
+TimeSyncC must be initialized via StdControl. once inited, use GlobalTime 
+interface to obtain the global time in the network. TimeSync is using 
+GenericComm and Timer, so the upmost app has to initialize these two components. 
+your code should look like:
+    Main.StdControl -> TimerC;
+    Main.StdControl -> GenericComm;
+    Main.StdControl -> TimesyncC;
+
+required system files:
+----------------------
+1) you will need the following files from the $vu/tos directory in order to use 
+the TimeSync component with CPU clock (TIMESYNC_SYSTIME is defined):
+    lib/TimeSync
+    lib/platform/mica2
+    
+2) if using external clock (TIMESYNC_SYSTIME is NOT defined) you need the 
+following files from $vu/tos directory:
+    lib/TimeSync/* 
+    platform/avrmote/*
+    system/ClockTimeStamping*
+!warning - Clock.nc interface divereged from the original quite a bit -> u may 
+experience compatibility issues, we're looking into solving this
+
+3) for telos and micaz you need to include $vu/tos/lib/CC2420 directory
+
+Makefile:
+--------
+if you have a full copy of the tinyos-1.x cvs tree,  Makefile of your app should 
+look like:
+
+1) CPU timing:
+COMPONENT=xxxxxxxx 
+VUDIR=%T/../contrib/vu/tos 
+PFLAGS += -I$(VUDIR)/lib/TimeSync -I$(VUDIR)/platform/mica2 
+PFLAGS += -DTIMESYNC_SYSTIME -DTIMESYNC_RATE=60 
+include ../Makerules
+
+2) for external crystal:
+COMPONENT=xxxxxxxx 
+VUDIR=%T/../contrib/vu/tos 
+PFLAGS += -I$(VUDIR)/lib/TimeSync -I$(VUDIR)/platform/avrmote -I$(VUDIR)/mica2
+PFLAGS += -DTIMESYNC_RATE=60 
+include ../Makerules
+
+3)telos/micaz:
+add PFLAGS += -I$(VUDIR)/lib/CC2420 before all other includes described in 1) or 2)
+(see vu/apps/TestTimeSync how to resolve conflicts between mica2 and micaz/telos
+files)

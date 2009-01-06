@@ -1,0 +1,269 @@
+This is pdfTeX, Version 3.14159-14h-released-20010417 (Web2C 7.3.3.1) (format=pdflatex 2003.2.18)  12 AUG 2005 15:46
+**sensys.tex
+(./sensys.tex{/usr/share/texmf/pdftex/config/pdftex.cfg}
+LaTeX2e <2001/06/01>
+Babel <v3.7h> and hyphenation patterns for american, french, german, ngerman, i
+talian, nohyphenation, loaded.
+(/usr/share/texmf/tex/latex/base/article.cls
+Document Class: article 2001/04/21 v1.4e Standard LaTeX document class
+(/usr/share/texmf/tex/latex/base/size10.clo
+File: size10.clo 2001/04/21 v1.4e Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@section=\count80
+\c@subsection=\count81
+\c@subsubsection=\count82
+\c@paragraph=\count83
+\c@subparagraph=\count84
+\c@figure=\count85
+\c@table=\count86
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+) (./acm-style10.sty
+LaTeX Info: Redefining \rm on input line 67.
+LaTeX Info: Redefining \sf on input line 68.
+LaTeX Info: Redefining \tt on input line 69.
+LaTeX Info: Redefining \bf on input line 70.
+LaTeX Info: Redefining \it on input line 71.
+LaTeX Info: Redefining \sl on input line 72.
+LaTeX Info: Redefining \sc on input line 73.
+LaTeX Info: Redefining \cal on input line 74.
+LaTeX Info: Redefining \mit on input line 75.
+)
+(/usr/share/texmf/tex/latex/psnfss/times.sty
+Package: times 2001/06/04 PSNFSS-v8.2 (SPQR) 
+)
+(/usr/share/texmf/tex/latex/graphics/epsfig.sty
+Package: epsfig 1999/02/16 v1.7a (e)psfig emulation (SPQR)
+
+(/usr/share/texmf/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/share/texmf/tex/latex/graphics/graphics.sty
+Package: graphics 2001/07/07 v1.0n Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/usr/share/texmf/tex/latex/config/graphics.cfg)
+Package graphics Info: Driver file: pdftex.def on input line 80.
+
+(/usr/share/texmf/tex/latex/graphics/pdftex.def
+File: pdftex.def 2001/11/29 v0.03i graphics/color for pdftex
+\Gread@gobject=\count87
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+)
+\epsfxsize=\dimen105
+\epsfysize=\dimen106
+) (./twocolumn.sty)
+(/usr/share/texmf/tex/latex/html/url.sty
+Package: url 1999/03/02  ver 1.4  Verb mode for urls, email addresses, and file
+ names
+)
+(/usr/share/texmf/tex/generic/babel/babel.sty
+Package: babel 2001/03/01 v3.7h The Babel package
+
+(/usr/share/texmf/tex/generic/babel/english.ldf
+Language: english 2001/04/15 v3.3l English support from the babel system
+
+(/usr/share/texmf/tex/generic/babel/babel.def
+File: babel.def 2001/03/01 v3.7h Babel common definitions
+\babel@savecnt=\count88
+\U@D=\dimen107
+)
+\l@canadian = a dialect from \language\l@english 
+))
+(/usr/share/texmf/tex/latex/graphics/color.sty
+Package: color 1999/02/16 v1.0i Standard LaTeX Color (DPC)
+
+(/usr/share/texmf/tex/latex/config/color.cfg)
+Package color Info: Driver file: pdftex.def on input line 125.
+)
+(/usr/share/texmf/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2000/07/18 v2.13 AMS math features
+\@mathmargin=\skip43
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texmf/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01
+
+(/usr/share/texmf/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0
+\@emptytoks=\toks15
+\ex@=\dimen108
+))
+(/usr/share/texmf/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d
+\pmbraise@=\dimen109
+)
+(/usr/share/texmf/tex/latex/amsmath/amsopn.sty
+Package: amsopn 1999/12/14 v2.01 operator names
+)
+\inf@bad=\count89
+LaTeX Info: Redefining \frac on input line 211.
+\uproot@=\count90
+\leftroot@=\count91
+LaTeX Info: Redefining \overline on input line 307.
+\classnum@=\count92
+\DOTSCASE@=\count93
+LaTeX Info: Redefining \ldots on input line 379.
+LaTeX Info: Redefining \dots on input line 382.
+LaTeX Info: Redefining \cdots on input line 467.
+\Mathstrutbox@=\box26
+\strutbox@=\box27
+\big@size=\dimen110
+LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
+\macc@depth=\count94
+\c@MaxMatrixCols=\count95
+\dotsspace@=\muskip10
+\c@parentequation=\count96
+\dspbrk@lvl=\count97
+\tag@help=\toks16
+\row@=\count98
+\column@=\count99
+\maxfields@=\count100
+\andhelp@=\toks17
+\eqnshift@=\dimen111
+\alignsep@=\dimen112
+\tagshift@=\dimen113
+\tagwidth@=\dimen114
+\totwidth@=\dimen115
+\lineht@=\dimen116
+\@envbody=\toks18
+\multlinegap=\skip44
+\multlinetaggap=\skip45
+\mathdisplay@stack=\toks19
+LaTeX Info: Redefining \[ on input line 2666.
+LaTeX Info: Redefining \] on input line 2667.
+) (./sensys.aux
+
+LaTeX Warning: Label `fig:alltts' multiply defined.
+
+
+LaTeX Warning: Label `fig:grid90' multiply defined.
+
+)
+\openout1 = `sensys.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 71.
+LaTeX Font Info:    ... okay on input line 71.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 71.
+ (/usr/share/texmf/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+(/usr/share/texmf/tex/context/base/supp-pdf.tex
+(/usr/share/texmf/tex/context/base/supp-mis.tex
+loading : Context Support Macros / Missing
+\protectiondepth=\count101
+\scratchcounter=\count102
+\scratchtoks=\toks20
+\scratchdimen=\dimen117
+\scratchskip=\skip46
+\scratchmuskip=\muskip11
+\scratchbox=\box28
+\scratchread=\read1
+\scratchwrite=\write3
+\zeropoint=\dimen118
+\nextbox=\box29
+\nextdepth=\dimen119
+\everyline=\toks21
+\!!counta=\count103
+\!!countb=\count104
+\recursecounter=\count105
+)
+loading : Context Support Macros / PDF
+\nofMPsegments=\count106
+\nofMParguments=\count107
+\everyMPtoPDFconversion=\toks22
+)
+
+LaTeX Warning: No \author given.
+
+(./simulations.tex
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 16.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10.95> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 32.
+
+
+LaTeX Warning: Reference `fig:psynched' on page 1 undefined on input line 40.
+
+<./figures/mdw/synch/percent-synch.pdf, id=1, 664.88402pt x 448.07399pt>
+File: ./figures/mdw/synch/percent-synch.pdf Graphic file (type pdf)
+
+<use ./figures/mdw/synch/percent-synch.pdf>
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 102.
+
+<./figures/mdw/ata/tts.pdf, id=2, 664.88402pt x 448.07399pt>
+File: ./figures/mdw/ata/tts.pdf Graphic file (type pdf)
+
+<use ./figures/mdw/ata/tts.pdf>
+<./figures/mdw/ata/gs50.pdf, id=3, 664.88402pt x 448.07399pt>
+File: ./figures/mdw/ata/gs50.pdf Graphic file (type pdf)
+
+<use ./figures/mdw/ata/gs50.pdf>
+<./figures/mdw/ata/gs90.pdf, id=4, 664.88402pt x 448.07399pt>
+File: ./figures/mdw/ata/gs90.pdf Graphic file (type pdf)
+
+<use ./figures/mdw/ata/gs90.pdf>
+<./figures/mdw/grid/tts.pdf, id=5, 664.88402pt x 448.07399pt>
+File: ./figures/mdw/grid/tts.pdf Graphic file (type pdf)
+
+<use ./figures/mdw/grid/tts.pdf>
+<./figures/mdw/grid/gs50.pdf, id=6, 664.88402pt x 448.07399pt>
+File: ./figures/mdw/grid/gs50.pdf Graphic file (type pdf)
+
+<use ./figures/mdw/grid/gs50.pdf>
+<./figures/mdw/grid/gs90.pdf, id=7, 664.88402pt x 448.07399pt>
+File: ./figures/mdw/grid/gs90.pdf Graphic file (type pdf)
+
+<use ./figures/mdw/grid/gs90.pdf>) (./sensys.bbl
+Underfull \vbox (badness 2103) has occurred while \output is active []
+
+ [1{/usr/share/texmf/dvips/config/pdftex.map}
+
+
+
+] [2 <./figures/mdw/synch/percent-synch.pdf> <./figures/mdw/ata/tts.pdf> <./fig
+ures/mdw/ata/gs50.pdf> <./figures/mdw/ata/gs90.pdf> <./figures/mdw/grid/tts.pdf
+> <./figures/mdw/grid/gs50.pdf>]) [3 <./figures/mdw/grid/gs90.pdf>] (./sensys.a
+ux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 2016 strings out of 50453
+ 24091 string characters out of 688420
+ 85792 words of memory out of 1500001
+ 4985 multiletter control sequences out of 10000+25000
+ 29471 words of font info for 58 fonts, out of 400000 for 1000
+ 14 hyphenation exceptions out of 10000
+ 32i,8n,21p,874b,361s stack positions out of 3000i,500n,3000p,50000b,5000s
+</usr/share/texmf/fonts/type1/bluesky/cm/cmmi10.pfb>{/usr/share/texmf/dvips/b
+ase/8r.enc}
+Output written on sensys.pdf (3 pages, 62038 bytes).

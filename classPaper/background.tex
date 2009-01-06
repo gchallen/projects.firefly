@@ -1,0 +1,62 @@
+
+\section{Background and Related Work}
+\label{sec:background}
+
+There has been some work on designing algorithms to solve various sensor network
+problems using pulse-coupled oscillator based schemes.
+Hong and Scaglione~\cite{ssp03, tsrbc03} introduce an adaptive distributed time
+synchronization method based on Strogatz and Mirollo's pulse-coupled 
+oscillating system for Ultra Wideband (UWB) wireless ad hoc networks.  
+Ultra Wideband (UWB) wireless devices can be used for short-range high-speed 
+data transmissions suitable for broadband access to the Internet.
+Recently Hong, Cheow and Scaglione~\cite{hcs04} propose a method to reach detection
+consensus in massively distributed sensor networks that uses the synchronized
+pulses of sensor nodes. In their proposal, synchronization updates are modeled 
+by the dynamical evolution of a set of pulse-coupled oscillators which are 
+guarateed to converge to synchrony in a variety of circumstances.  
+An important drawback of their scheme is the reliance on an all-to-all communication
+model which can cause instability on the synchronization scheme due to long
+delays in signal propagation time and increased noise in the communication
+channel.
+
+Drawing from recent results in multiagent control, Lucarelli and Wang~\cite{lw04}
+propose a simple method of synchronization without the all-to-all assumption 
+mandated in the original firefly-based pulse coupled integrate and fire model
+proposed by Mirollo and Strogatz.
+Specifically, Lucarelli and Wang explore conditions on the update protocol that lead to synchrony
+with bidirectional nearest neighbor coupling.  
+One drawback of their approach is that they disregard factors such as noise 
+in the detection model and propagation delay that will influence the accuracy of their algorithms
+when tested in realistic wireless communication settings.  One of the contributions
+of this paper is to evaluate the quality of the synchronicity achieved
+in the presence of realistic constraints imposed in a wireless sensor setting
+such as noise and collisions in the communication mediums, as well as clock skew
+on individual sensors.
+
+Wakamiya and Murata~\cite{wm04} propose a scheme for data fusion in sensor networks where information
+collected by sensors is periodically propogated without any centralized control
+from the edge of a sensor network to a base station as the propagation forms a concentric
+circle. They use the pulse coupled oscillator model based on biological mutual
+synchronization to allow sensor nodes to independently determine the cycle and timing
+at which they emit information in synchrony. The nodes do this purely on the basis of 
+observing radio signals emitted by sensor nodes in their vicinity. While they
+consider robustness to node failure and energy efficiency, their evaluation is limited
+to simulation and does not attempt to model factor such as noise and propagation delay
+that exist in sensor networks, and will undoubtedly impact the effectiveness of 
+their scheme in a realistic sensor network setting.
+
+There has also been some work on using firefly synchrony theory to develop communication
+protocols for wide area networks. In particular, Wokoma et al.~\cite{wl02} propose
+a weakly coupled adaptive gossip protocol for application level active networks. 
+Using the pulse coupled oscillator based scheme, they define a scheme for
+management policy distribution and sychronization over a number of nodes in an application 
+level active network. Their simulation results show that the algorithms are scalable, 
+can work effectively in a realistic random network, and allow policy updates
+to be distributed effectively. 
+
+Sacks et al.~\cite{sb03} describe a firefly based synchronization scheme for 
+sensor nodes in an environmental monitoring system. In their system, nodes
+need a degree of synchronization as well as be able to adjust the sync-time base
+to enable energy conserving operation. They accomplish this by allowing the nodes
+to exhange messages in line with a flash interval, and \emph{lock} on to 
+the message exchange phase in order to achieve synchronization.

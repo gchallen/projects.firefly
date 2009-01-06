@@ -1,0 +1,60 @@
+#########
+QUESTION: 
+        > do i need the skew thing?
+A: you need the skew thing! it is necessary because the frequencies of the 
+crystals at the different motes are slightly different. since we want precision 
+in microsecond range, we need to compensate for the skew. specs for MICA2 say 
+that CPU frequency should be 7.3828 MHz. In reality your mote's frequency would 
+be eg. 7.3827 MHz and of a different mote 7.3829 MHz which introduces the error 
+of 20 clock ticks per second. this small error would accumulate over time far 
+beyond the intended precision...
+
+#########
+QUESTION: 
+        > i don't understand what is your skew!
+A: using std terminology, skew would be the ratio between the frequency of the
+global time crystal and the local time crystal, so that the following relation
+would hold: 
+        global = SKEW*local + OFFSET
+where global, local are variables and SKEW, OFFSET are constants specific 
+to individual motes (i.e. for the root: SKEW = 1.0, OFFSET = 0.0)
+
+since we know that the frequencies of 2 different clock crystals are almost the 
+same, SKEW_0 is a constant which is very close to one: eg. SKEW_0 = 1.0+ 10^- 5 
+keeping such constant in computer is inefficient; to gain beter precision, we 
+can improve by subtracting 1.0 from it, getting in fact relation for offset 
+between global and local time(offset=global-local): 
+    offset = SKEW_0*local + OFFSET_0  (1)
+    
+in order to take the error of the multiplication further down, we keep OFFSET_A
+for some recent point in time (LOCAL_A) and do the following:
+   a)we know that: OFFSET_A = SKEW_0*LOCAL_A + OFFSET_0 (2)
+   b)we know the actual local time(local) and we want to find actual offset:
+   c)just subtract equations 1) and 2):
+		offset - OFFSET_A = SKEW_0 * (local - LOCAL_A)
+		offset = OFFSET_A + SKEW_0 * (local - LOCAL_A)	
+   d)the formula for the global time then trivially follows:		
+		global = local + OFFSET_A + SKEW_0 * (local - LOCAL_A)
+
+we choose the recent point in time(LOCAL_A) be the average of times stored in our 
+linear regression table, to minimize the single measurement errors. the problem
+here is with the root who stops updating LOCAL_A time after re-election which
+introduces large error in multiplication after some point in time: therefore each
+root needs to eventually update LOCAL_A and OFFSET_A values:
+    if( (int32_t)(local - LOCAL_A) >= 0x20000000 ) ... in the code does this
+    
+#########
+QUESTION:
+        > You use either Timer/Clock'0' or Timer/Clock'3' right?
+        > What is the major difference between the Timers 0~3, other
+        > than the frequency? Is there a big reason that you can use 
+        > one but not the other? 
+ANSWER:
+clock0 is driven by external oscillator (32kHz) - allows for power save mode, is 
+generally more stable, does not depend as much on temperature/voltage changes; 
+e.g. i tried 1 hour resynchronization and got under 1ms error (60us on average) 
+clock0 is used when TIMESYNC_SYSTIME is NOT defined 
+
+clock3 is driven by the CPU clock (7.38MHz)- has better resolution (1 tick = 1 
+us for clock3 compared to 1 tick = 30us for clock0) clock3 is used when 
+TIMESYNC_SYSTIME is defined

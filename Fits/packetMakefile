@@ -1,0 +1,8 @@
+COMPONENT=Fits
+DEFAULT_LOCAL_GROUP=0x44
+include ${TOSDIR}/../tools/make/Makerules
+PFLAGS += -DTOSSIMPACKET
+PFLAGS += -I${TOSDIR}/platform/pc/packet
+java:
+	mig java -java-classname=FitsMsgT FitsMsg.h FitsMsgT -o FitsMsgT.java
+	javac *.java

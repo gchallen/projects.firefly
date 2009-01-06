@@ -1,0 +1,70 @@
+\section{Evaluation Tools and Metrics}
+
+Both our simulation and testbed experiments output a series of node
+IDs and firing times. In order to discuss the accuracy of the achieved
+synchronicity, it is necessary to identify groups of nodes firing
+together.
+
+For this purpose, we identify sets of node firings that fall within a
+prespecified time window. We call each cluster of node firings a {\em
+group}. Given a time window size $w$, the clustering algorithm outputs
+a series of firing groups that meet two constraints. First, every node
+firing event must fall within exactly one group.  Second, groups are
+chosen to contain as many firing events as possible. 
+
+We define the {\em group spread} as the maximum time difference
+between any two firings in the group. The time window size $w$
+represents the upper bound on the group spread. 
+
+\subsection{Evaluation Metrics}
+
+The two evaluation metrics that we are concerned with involve
+the amount of time until the system achieves synchronicity (if at
+all), and the accuracy of the achieved synchronicity.
+
+\begin{description}
+\item {\bf Time To Sync:} This is defined as the time that it takes
+all nodes to enter into a single group and stay within that group for
+9 out of the last 10 firing iterations. The value chosen for the time
+window $w$ does impact the measured time to sync; a very small $w$
+will result in a time to sync that is longer than with a larger $w$,
+because it takes longer for all nodes to join a firing group within a
+smaller time window. Also, as will be discussed in the next sections,
+the simulator has lower time resolution than the testbed hardware
+which means there is a limit on the accuracy it can
+achieve. Therefore, for the simulator we set $w = 0.1$sec and in the
+real testbed we set $w = 0.01$sec.
+
+\item{\bf 50th and 90th Percentile Group Spread:} Recall that the
+group spread measures the maximum time difference between any two
+events in a firing group. We wish to characterize the {\em
+distribution} of group spread for all groups after the system has
+achieved synchronicity. Although synchronicity may be achieved
+according to the time to sync metric above, we wish to avoid measuring
+group spread while the system is still settling. Given the first sync
+time $t_s$ and the time the experiment ends $t_e$, we calculate the
+group spread distribution across all groups in the interval $[t_s +
+\frac{(t_e - t_s)}{2}, t_e]$. In this way we are measuring the
+distribution across all ``tight'' groups rather than settling
+effects. We plot the 50th and 90th percentile of the distribution.
+
+%To describe the level of
+%synchronicity achieved by a given set of nodes, we proceed as follows.
+%First, we examine only the time after which the system has synchronized, as
+%defined by the time to sync.  To avoid penalizing systems which achieve
+%tighter synchronicity than the binning parameter chosen we elide the first
+%half of these spreads, thereby avoiding considering spreads produced when the
+%system was still approaching its optimal level of synchronicity.  We
+%calculate the 50th and 90th percentile group spread across the remaining
+%data.  The meaning of these numbers is straightforward: over 50\% of the
+%group firings the nodes were synchronized to at least the 50th percentile
+%group spread, and likewise for the 95th percentile group spread.
+\end{description}
+
+
+Lastly, we define the {\em Firing Function Constant} (FFC) to be the
+value $1/\epsilon$, which is the main parameter in the RFA
+algorithm. As discussed in Section \ref{sec:params}, this parameter
+limits the response of a node to be at most $T/FFC$ and
+thus the time to synchronize is directly proportional to
+$FFC$. 

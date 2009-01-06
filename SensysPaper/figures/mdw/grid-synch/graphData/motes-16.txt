@@ -1,0 +1,5 @@
+#FF Constant	Percent Synched	
+20	100	0
+50	100	0
+100	100	0
+500	40	0

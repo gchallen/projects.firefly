@@ -1,0 +1,1520 @@
+%!PS-Adobe-3.0 EPSF-2.0
+%%BoundingBox: (atend)
+%%Pages: 1
+%%Creator: bargraph2.pl
+%%CreationDate: Sun Aug 14 14:56:55 2005
+%%Orientation: Portrait
+%%Title: 
+%%LanguageLevel: 2
+%%DocumentNeededResources: font Helvetica
+%%+ font Helvetica-Bold Helvetica-Oblique Helvetica-BoldOblique
+%%+ font Times-Roman Times-Italic Times-Bold Times-BoldItalic
+%%EndComments
+%%BeginProlog
+
+% R G B pattern thickness x_start x_stop y_min y_max draw_bar
+/draw_bar
+{
+  gsave
+    newpath
+ 
+    % Arranging the stack in the wanted drawing order for the four corners of the box.
+    dup
+    5 -1 roll
+    dup
+    6 1 roll
+    exch
+    6 3 roll
+    exch
+    2 copy
+    8 -3 roll
+ 
+    % Drawing the box from the stack.
+    moveto
+    lineto
+    lineto
+    lineto
+    closepath
+ 
+    1 x_scale div
+    1 y_scale div
+    scale
+    % now in default coordinates
+    res div 72 mul  setlinewidth
+    gsave
+      dup 0 eq {pop setrgbcolor} {0 0 0 setrgbcolor setpattern} ifelse
+      fill
+    grestore
+    0 currentlinewidth ne {stroke} if
+ 
+  grestore
+} def                            
+
+
+% gray pattern thickness x_start x_stop y_min y_max draw_gray_bar
+/draw_gray_bar
+{
+  gsave
+    newpath
+ 
+    % Arranging the stack in the wanted drawing order for the four 
+    % corners of the box.
+    dup
+    5 -1 roll
+    dup
+    6 1 roll
+    exch
+    6 3 roll
+    exch
+    2 copy
+    8 -3 roll
+ 
+    % Drawing the box from the stack.
+    moveto
+    lineto
+    lineto
+    lineto
+    closepath
+ 
+    1 x_scale div
+    1 y_scale div
+    scale
+    % now in default coordinates
+    res div 72 mul  setlinewidth
+    gsave
+      dup 0 eq {pop setgray} {0 setgray setpattern} ifelse
+      fill
+    grestore
+    0 currentlinewidth ne {stroke} if
+ 
+  grestore
+} def           
+
+
+% thickness min_x min_y max_x max_y draw_frame
+/draw_frame 
+{
+  gsave
+    1 x_scale div
+    1 y_scale div
+    scale
+    % now in default coordinates
+    5 -1 roll
+    res div 72 mul setlinewidth
+
+
+    2 index sub y_scale mul
+    exch
+    3 index sub x_scale mul
+    dup
+    3 1 roll 
+    5 -1 roll x_scale mul
+    5 -1 roll y_scale mul
+	
+
+    newpath
+    moveto
+    0 rlineto
+    0 exch rlineto
+    neg 0 rlineto
+    closepath
+    stroke
+
+  grestore
+} def
+
+
+% R G B R G B pattern thickness min_x min_y max_x max_y draw_box
+/draw_box
+{
+  gsave
+    1 x_scale div
+    1 y_scale div
+    scale
+    % now in default coordinates
+    5 -1 roll
+    res div 72 mul setlinewidth
+
+
+    2 index sub y_scale mul
+    exch
+    3 index sub x_scale mul
+    dup
+    3 1 roll 
+    5 -1 roll x_scale mul
+    5 -1 roll y_scale mul
+	
+
+    newpath
+    moveto
+    0 rlineto
+    0 exch rlineto
+    neg 0 rlineto
+    closepath
+      dup 0 eq {pop setrgbcolor} {0 0 0 setrgbcolor setpattern} ifelse
+    gsave fill grestore
+    setrgbcolor stroke
+
+  grestore
+} def
+
+% gray gray thickness min_x min_y max_x max_y draw_gray_box
+/draw_gray_box
+{
+  gsave
+    1 x_scale div
+    1 y_scale div
+    scale
+    % now in default coordinates
+    5 -1 roll
+    res div 72 mul setlinewidth
+
+
+    2 index sub y_scale mul
+    exch
+    3 index sub x_scale mul
+    dup
+    3 1 roll 
+    5 -1 roll x_scale mul
+    5 -1 roll y_scale mul
+	
+
+    newpath
+    moveto
+    0 rlineto
+    0 exch rlineto
+    neg 0 rlineto
+    closepath
+      dup 0 eq {pop setgray} {0 setgray setpattern} ifelse  
+    gsave fill grestore
+    setgray stroke
+
+  grestore
+} def
+
+
+% R G B min_x min_y max_x max_y color_background
+/color_background
+{
+  gsave
+    1 x_scale div
+    1 y_scale div
+    scale
+    % now in default coordinates
+
+
+    2 index sub y_scale mul
+    exch
+    3 index sub x_scale mul
+    dup
+    3 1 roll 
+    5 -1 roll x_scale mul
+    5 -1 roll y_scale mul
+	
+
+    newpath
+    moveto
+    0 rlineto
+    0 exch rlineto
+    neg 0 rlineto
+    closepath
+    setrgbcolor
+    fill
+
+  grestore
+} def
+
+
+
+
+% res, x_scale, and y_scale need to be defined in the setup section
+/to_x_pixels {x_scale div res div 72 mul} def
+/to_y_pixels {y_scale div res div 72 mul} def
+
+/set_current_font
+{
+  exch findfont exch scalefont setfont
+% selectfont is faster in PS2, but it does not work in PS1
+%  selectfont
+} def
+
+%string left_shift down_shift angle xpos ypos draw_text
+/draw_text
+{
+  gsave
+    translate
+    1 x_scale div
+    1 y_scale div
+    scale
+    rotate
+
+    gsave
+    newpath 0 0 moveto 2 index  true charpath flattenpath pathbbox closepath
+    grestore
+
+    3 -1 roll pop
+    3 -1 roll pop
+
+
+    3 -1 roll
+    mul neg
+    3 1 roll
+    mul neg
+    exch
+
+    moveto
+    show
+  grestore
+} def
+
+%% Encodes a font to the specified standard.
+%% Usage: <New font name> <Old font name> <Encoding Vector> encode_font
+/encode_font {
+  3 -1 roll
+  /new_font_name exch def
+  exch findfont
+  dup length dict begin
+  {1 index /FID ne {def} {pop pop} ifelse } forall
+  /Encoding exch def
+  currentdict
+  end 
+  new_font_name exch definefont pop
+} def
+
+
+%%EndProlog
+
+
+  %%BeginSetup
+  %%IncludeResource: font Helvetica
+  %%IncludeResource: font Helvetica-Oblique
+  %%IncludeResource: font Helvetica-Bold
+  %%IncludeResource: font Helvetica-BoldOblique
+  %%IncludeResource: font Times-Roman
+  %%IncludeResource: font Times-Italic
+  %%IncludeResource: font Times-Bold
+  %%IncludeResource: font Times-BoldItalic
+
+
+
+  %%EndSetup
+  
+  %%Page: Page1
+  
+  %%BeginPageSetup
+  /pgsave save def
+  
+  % set these inPostScript points
+  /bottom_margin 72 def
+  /left_margin   72   def
+  
+  left_margin bottom_margin translate
+  
+  % scale factors from PostScript size (1/72 inch) to graph coordinates
+  /x_scale 7.7056856187291 def
+  /y_scale 3.49514563106796 def
+  
+  x_scale y_scale scale
+  
+  
+  /res 100 def
+  
+  
+  
+  
+  
+  %%EndPageSetup
+  
+  
+gsave
+newpath
+  0 0 0 setrgbcolor
+  0 0 moveto
+  74.75 0 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  0 20 moveto
+  74.75 20 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  0 40 moveto
+  74.75 40 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  0 60 moveto
+  74.75 60 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  0 80 moveto
+  74.75 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  0 100 moveto
+  74.75 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+0 0 1 0 1 5.05 5.95 0 100 draw_bar
+1 0 0 0 1 6.05 6.95 0 100 draw_bar
+0 1 0 0 1 7.05 7.95 0 60 draw_bar
+1 0.647058823529412 0 0 1 8.05 8.95 0 20 draw_bar
+0 0 0 0 1 9.05 9.95 0 100 draw_bar
+gsave
+  /Helvetica 13 set_current_font
+  (FF 70) 0.5 0.5 0 7.5 -4.12 draw_text
+grestore
+0 0 1 0 1 15.05 15.95 0 80 draw_bar
+1 0 0 0 1 16.05 16.95 0 100 draw_bar
+0 1 0 0 1 17.05 17.95 0 100 draw_bar
+1 0.647058823529412 0 0 1 18.05 18.95 0 60 draw_bar
+0 0 0 0 1 19.05 19.95 0 100 draw_bar
+gsave
+  /Helvetica 13 set_current_font
+  (FF 100) 0.5 0.5 0 17.5 -4.12 draw_text
+grestore
+0 0 1 0 1 25.05 25.95 0 80 draw_bar
+1 0 0 0 1 26.05 26.95 0 100 draw_bar
+0 1 0 0 1 27.05 27.95 0 80 draw_bar
+1 0.647058823529412 0 0 1 28.05 28.95 0 100 draw_bar
+0 0 0 0 1 29.05 29.95 0 100 draw_bar
+gsave
+  /Helvetica 13 set_current_font
+  (FF 300) 0.5 0.5 0 27.5 -4.12 draw_text
+grestore
+0 0 1 0 1 35.05 35.95 0 100 draw_bar
+1 0 0 0 1 36.05 36.95 0 100 draw_bar
+0 1 0 0 1 37.05 37.95 0 100 draw_bar
+1 0.647058823529412 0 0 1 38.05 38.95 0 100 draw_bar
+0 0 0 0 1 39.05 39.95 0 100 draw_bar
+gsave
+  /Helvetica 13 set_current_font
+  (FF 500) 0.5 0.5 0 37.5 -4.12 draw_text
+grestore
+0 0 1 0 1 45.05 45.95 0 80 draw_bar
+1 0 0 0 1 46.05 46.95 0 100 draw_bar
+0 1 0 0 1 47.05 47.95 0 100 draw_bar
+1 0.647058823529412 0 0 1 48.05 48.95 0 100 draw_bar
+0 0 0 0 1 49.05 49.95 0 100 draw_bar
+gsave
+  /Helvetica 13 set_current_font
+  (FF 750) 0.5 0.5 0 47.5 -4.12 draw_text
+grestore
+0 0 1 0 1 55.05 55.95 0 80 draw_bar
+1 0 0 0 1 56.05 56.95 0 100 draw_bar
+0 1 0 0 1 57.05 57.95 0 100 draw_bar
+1 0.647058823529412 0 0 1 58.05 58.95 0 100 draw_bar
+0 0 0 0 1 59.05 59.95 0 100 draw_bar
+gsave
+  /Helvetica 13 set_current_font
+  (FF 1000) 0.5 0.5 0 57.5 -4.12 draw_text
+grestore
+gsave
+  /Helvetica 12 set_current_font
+  () 0.5 0 0 37.375 108.15 draw_text
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  5.5 100 moveto
+  5.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  5.1 100 moveto
+  5.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  5.1 100 moveto
+  5.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  6.5 100 moveto
+  6.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  6.1 100 moveto
+  6.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  6.1 100 moveto
+  6.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  7.5 60 moveto
+  7.5 60 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  7.1 60 moveto
+  7.9 60 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  7.1 60 moveto
+  7.9 60 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  8.5 20 moveto
+  8.5 20 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  8.1 20 moveto
+  8.9 20 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  8.1 20 moveto
+  8.9 20 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  9.5 100 moveto
+  9.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  9.1 100 moveto
+  9.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  9.1 100 moveto
+  9.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  15.5 80 moveto
+  15.5 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  15.1 80 moveto
+  15.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  15.1 80 moveto
+  15.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  16.5 100 moveto
+  16.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  16.1 100 moveto
+  16.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  16.1 100 moveto
+  16.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  17.5 100 moveto
+  17.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  17.1 100 moveto
+  17.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  17.1 100 moveto
+  17.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  18.5 60 moveto
+  18.5 60 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  18.1 60 moveto
+  18.9 60 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  18.1 60 moveto
+  18.9 60 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  19.5 100 moveto
+  19.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  19.1 100 moveto
+  19.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  19.1 100 moveto
+  19.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  25.5 80 moveto
+  25.5 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  25.1 80 moveto
+  25.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  25.1 80 moveto
+  25.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  26.5 100 moveto
+  26.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  26.1 100 moveto
+  26.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  26.1 100 moveto
+  26.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  27.5 80 moveto
+  27.5 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  27.1 80 moveto
+  27.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  27.1 80 moveto
+  27.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  28.5 100 moveto
+  28.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  28.1 100 moveto
+  28.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  28.1 100 moveto
+  28.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  29.5 100 moveto
+  29.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  29.1 100 moveto
+  29.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  29.1 100 moveto
+  29.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  35.5 100 moveto
+  35.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  35.1 100 moveto
+  35.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  35.1 100 moveto
+  35.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  36.5 100 moveto
+  36.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  36.1 100 moveto
+  36.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  36.1 100 moveto
+  36.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  37.5 100 moveto
+  37.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  37.1 100 moveto
+  37.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  37.1 100 moveto
+  37.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  38.5 100 moveto
+  38.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  38.1 100 moveto
+  38.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  38.1 100 moveto
+  38.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  39.5 100 moveto
+  39.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  39.1 100 moveto
+  39.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  39.1 100 moveto
+  39.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  45.5 80 moveto
+  45.5 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  45.1 80 moveto
+  45.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  45.1 80 moveto
+  45.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  46.5 100 moveto
+  46.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  46.1 100 moveto
+  46.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  46.1 100 moveto
+  46.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  47.5 100 moveto
+  47.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  47.1 100 moveto
+  47.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  47.1 100 moveto
+  47.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  48.5 100 moveto
+  48.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  48.1 100 moveto
+  48.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  48.1 100 moveto
+  48.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  49.5 100 moveto
+  49.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  49.1 100 moveto
+  49.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  49.1 100 moveto
+  49.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  55.5 80 moveto
+  55.5 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  55.1 80 moveto
+  55.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  55.1 80 moveto
+  55.9 80 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  56.5 100 moveto
+  56.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  56.1 100 moveto
+  56.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  56.1 100 moveto
+  56.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  57.5 100 moveto
+  57.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  57.1 100 moveto
+  57.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  57.1 100 moveto
+  57.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  58.5 100 moveto
+  58.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  58.1 100 moveto
+  58.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  58.1 100 moveto
+  58.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  59.5 100 moveto
+  59.5 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  59.1 100 moveto
+  59.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  59.1 100 moveto
+  59.9 100 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  1 setlinewidth
+  stroke
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (0) 1 0.5 0 -1.16796875 0 draw_text
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (20) 1 0.5 0 -1.16796875 20 draw_text
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (40) 1 0.5 0 -1.16796875 40 draw_text
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (60) 1 0.5 0 -1.16796875 60 draw_text
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (80) 1 0.5 0 -1.16796875 80 draw_text
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (100) 1 0.5 0 -1.16796875 100 draw_text
+grestore
+gsave
+  /Helvetica 12 set_current_font
+  (Percentage Synchronized (%)) 0.5 0 90 -4.671875 51.5 draw_text
+grestore
+gsave
+  /Helvetica 12 set_current_font
+  (Firing function constant) 0.5 0 0 37.375 -10.3 draw_text
+grestore
+gsave
+newpath
+  0 0 0 setrgbcolor
+  74.75 0 moveto
+  0 0 lineto
+  0 0 lineto
+  0 103 lineto
+  1 x_scale div
+  1 y_scale div
+  scale
+  2 setlinewidth
+  stroke
+grestore
+0 0 0 1 1 1 0 1 63.0703125 92.7 72.4140625 61.8 draw_box
+gsave
+  /Helvetica 10 set_current_font
+  (4 nodes) 0 0.5 0 66.340625 89.095 draw_text
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (8 nodes) 0 0.5 0 66.340625 83.945 draw_text
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (12 nodes) 0 0.5 0 66.340625 78.795 draw_text
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (16 nodes) 0 0.5 0 66.340625 73.645 draw_text
+grestore
+gsave
+  /Helvetica 10 set_current_font
+  (20 nodes) 0 0.5 0 66.340625 68.495 draw_text
+grestore
+0 0 0 0 0 1 0 1 64.23828125 88.065 65.17265625 90.125 draw_box
+0 0 0 1 0 0 0 1 64.23828125 82.915 65.17265625 84.975 draw_box
+0 0 0 0 1 0 0 1 64.23828125 77.765 65.17265625 79.825 draw_box
+0 0 0 1 0.647058823529412 0 0 1 64.23828125 72.615 65.17265625 74.675 draw_box
+0 0 0 0 0 0 0 1 64.23828125 67.465 65.17265625 69.525 draw_box
+    
+pgsave restore
+showpage
+	
+%%Trailer
+%%BoundingBox: 0 0 662.4 446.4
+%%EOF

@@ -1,0 +1,13 @@
+This is a paper template for CS263. It has the correct formatting as
+expected for the course. Your final paper should be between 10 and 12 
+pages in this format (including *all* text, figures, references, etc.)
+
+This paper template requires pdflatex (a version of LaTeX that
+generates PDF directly). Any modern Linux system should have
+everything installed that you need. motelab.eecs has all of the
+relevant software installed.
+
+The Makefile here is used to compile the paper into 'template.pdf'.
+It requires GNU make, so you may need to type 'gmake'. 
+
+Matt Welsh, mdw@eecs.harvard.edu

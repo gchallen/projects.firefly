@@ -1,0 +1,3 @@
+# Datadir FFConstant TopologyFile NumMotes Time TopologyTag RandomSeed Makefile ProcessDelay SendDelay IgnorePeriod (ExtraTag)
+11-Mar-2005-GWA	10	-	2	3600	ALLTOALL	350	packetMakefile	250	25	10
+11-Mar-2005-GWA	100	-	2	3600	ALLTOALL	807	packetMakefile	250	25	10

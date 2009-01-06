@@ -1,0 +1,9 @@
+# Header file for experiments scripts
+# Field description follows
+# DataDir FFConstant TopologyFile NumMotes  Time(sec) TopologyTag
+06-Jan-2005-1 10 - 14 1800 ALLTOALL
+06-Jan-2005-1 50 - 14 1800 ALLTOALL
+06-Jan-2005-1 100 - 14 1800 ALLTOALL
+06-Jan-2005-1 250 - 14 1800 ALLTOALL
+06-Jan-2005-1 500 - 14 1800 ALLTOALL
+06-Jan-2005-1 1000 - 14 1800 ALLTOALL

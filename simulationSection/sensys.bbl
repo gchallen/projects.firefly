@@ -1,0 +1,17 @@
+\begin{thebibliography}{1}
+
+\bibitem{tinyos-asplos00}
+J.~Hill, R.~Szewczyk, A.~Woo, S.~Hollar, D.~E. Culler, and K.~S.~J. Pister.
+\newblock System architecture directions for networked sensors.
+\newblock In {\em Proc. the 9th International Conference on Architectural
+  Support for Programming Languages and Operating Systems}, pages 93--104,
+  Boston, MA, USA, Nov. 2000.
+
+\bibitem{tossim}
+P.~Levis, N.~Lee, M.~Welsh, and D.~Culler.
+\newblock {TOSSIM}: {A}ccurate and scalable simulation of entire {TinyOS}
+  applications.
+\newblock In {\em Proc. the First ACM Conference on Embedded Networked Sensor
+  Systems (SenSys 2003)}, November 2003.
+
+\end{thebibliography}

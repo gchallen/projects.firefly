@@ -1,0 +1,43 @@
+# 20 Apr 2005 : GWA : Makefile fragment showing how to include the FTSP
+#               sources for a given project.
+
+# 20 Apr 2005 : GWA : How often nodes send broadcast messages (sec).
+
+PFLAGS += -DTIMESYNC_RATE=10
+
+# 20 Apr 2005 : GWA : Don't think we need this for Telos.
+
+#PFLAGS += -I$(VUDIR)/platform/avrmote -I$(VUDIR)/platform/mica2
+
+# 20 Apr 2005 : GWA : Defining this tells FTSP to use the SysTime interface
+#               to do timing.  Originally this did not work for Telos but
+#               after wiring FTSP to the MicroTimer substitute I ported to
+#               Telos it seemed to.  Should be more rigorously tested, and
+#               for our application falling to the 32kHz external crystal
+#               (what happens when this is not defined) may be perfectly
+#               fine.
+
+PFLAGS += -DTIMESYNC_SYSTIME 
+
+# 20 Apr 2005 : GWA : Originally the path to the VU TimeSync directory, but
+#               corrected to use our modified sources.
+
+PFLAGS += -I../TimeSync/
+VUDIR = $(TOSDIR)/../contrib/vu/tos
+
+# 20 Apr 2005 : GWA : This needs our Telos/MicaZ multi-timer as well.
+
+PFLAGS += -I../MultiTimer/
+
+# 20 Apr 2005 : GWA : Other stuff.
+
+PFLAGS += -I$(VUDIR)/system/ClockTimeStamping
+PLATAUX = micaz telos
+PLATFORM := $(filter $(PLATAUX), $(MAKECMDGOALS))
+ifeq ($(PLATFORM),telos) 
+    PFLAGS += -I$(VUDIR)/lib/CC2420
+endif
+ifeq ($(PLATFORM),micaz) 
+    PFLAGS += -I$(VUDIR)/lib/CC2420
+endif
+

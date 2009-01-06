@@ -1,0 +1,148 @@
+\section{Background and Motivation}
+\label{sec-background}
+
+Time synchronization has received a great deal of attention in the
+sensor network community. The problem of establishing a consistent global
+timebase across a large network, despite message loss and delays, node
+failures, and local clock skew, has proven to be very difficult. As
+described in the introduction, our goal is not time synchronization,
+but rather {\em synchronicity:} the ability for all nodes in the
+network to agree on a common period and phase for firing
+pulses. Synchronicity can be used to implement time synchronization,
+although this requires mapping the local firing cycle to a
+global clock, which we leave for future work. 
+
+%% not quite true
+%% For example, the Flooding Time Synchronization Protocol (FTSP)~\cite{ftsp}
+%% uses multiple rounds of message transmission on each synchronization
+%% cycle to accurately estimate clock skew and message delays. In cases
+%% where only synchronicity is required, this overhead may not be desirable.
+
+%% mostly moved to introduction
+%% Synchronicity without time synchronization is extremely useful as a 
+%% sensor network coordination primitive. A commonly-used mechanism for
+%% limiting energy use is to carefully schedule node duty cycles so that
+%% all nodes in a network, or a portion of the network, will wake up at
+%% the same time, sample their sensors, and relay data along a routing
+%% path to the base station. Coordinated communication scheduling 
+%% has been used both at the MAC level~\cite{t-mac,s-mac} and in 
+%% multihop routing protocols~\cite{leach,stem} to save 
+%% energy.
+
+%% Synchronicity can also be used to correlate signals across multiple
+%% nodes in a network, which is especially important in applications
+%% with high data rates. Previous work on seismic analysis of
+%% structures~\cite{glaser-smart-buildings,wisan}, shooter
+%% localization~\cite{shooter-localization}, and volcanic 
+%% monitoring~\cite{volcano-ewsn05} could use a synchronicity primitive, 
+%% rather than time synchronization, to establish signal correlation
+%% across sensor nodes.
+
+\subsection{Time Synchronization}
+
+%Time synchronization in sensor networks is a well-studied problem.
+
+A number of protocols have been proposed that allow wireless sensor
+nodes to agree on a common global timebase. Here we briefly describe
+some of the protocols. In Receiver Based Synchronization
+(RBS)~\cite{rbs} a reference node broadcasts a message and multiple
+receivers within radio range can then agree on a common time base by
+exchanging the local clock times at which they received the message.
+This protocol avoids the uncertainty of transmission delays by using a
+single radio message to simultaneously synchronize multiple receiver
+nodes, however it does not apply in multi-hop networks. The
+TPSN~\cite{tpsn} protocol works on multi-hop networks by constructing
+a spanning tree and then using hop-by-hop synchronization along the
+edges to synchronize all nodes to the root. They also introduce MAC
+level timestamping to estimate transmission delay. The FTSP
+protocol \cite{ftsp}, simplifies the process of multi-hop
+synchronization by using periodic floods from an elected root, rather
+than maintaining a spanning tree. In the case of root failure, the
+system elects a new root node. FTSP also refines the timestamping
+process to within microsecond accuracy and provides a method for
+estimating clock drift which reduces the need to synchronize
+frequently.
+
+Direct comparison of these protocols in terms of synchronization error
+is difficult, due to the differences in hardware and evaluation
+methodology. FTSP reports a per-hop synchronization error of about
+1~$\mu$sec, although the maximum pairwise error is over 65~$\mu$sec in
+their testbed.  The mean single-hop synchronization error reported for
+TPSN is 16.9~$\mu$sec, compared to 29.1~$\mu$sec for RBS~\cite{tpsn}.
+The dynamics of these protocols in terms of robustness to topology
+changes and node population have not been widely studied.
+
+\subsection{Biologically-Inspired Synchronicity}
+
+Synchronicity has been observed in large biological swarms where
+individuals follow simple coordination strategies. The canonical
+example is the synchrony of fireflies observed in certain parts of
+southeast Asia~\cite{strogatz}.  The behavior of these systems can be
+modeled as a network of {\em pulse-coupled oscillators} where each
+node is an oscillator that periodically emits a self-generated pulse.
+Upon observing other oscillators' pulses, a node adjusts the phase of
+its own oscillator slightly. This simple feedback process results in
+the nodes tightly aligning their phases and achieving synchronicity.
+
+Peskin first introduced this model in the context of cardiac pacemaker
+cells\cite{peskin75}. Mirollo and Strogatz~\cite{strogatz} provide one
+of the earliest complete analytical studies of pulse-coupled
+oscillator systems. They proved that a fully-connected (all-to-all)
+network of $N$ identical pulse-coupled oscillators would synchronize,
+for any $N$ and any initial starting times. Recent work by Lucarelli
+and Wang~\cite{lucarelli04} relaxes the all-to-all communication
+assumption. Drawing from recent results in multi-agent control, they
+derive a stability result based on nearest neighbor coupling and show
+convergence in simulation for static and time varying
+topologies. Their work demonstrates that the same simple feedback
+process works, even when nodes only observe nearest neighbors and
+those neighbors may change over time.
+
+Several groups have proposed using pulse-coupled synchronicity to
+solve various network problems. Hong and
+Scaglione~\cite{tsrbc03,hcs04} introduce an adaptive distributed time
+synchronization method for fully-connected Ultra Wideband (UWB)
+networks. They use this as a basis for change detection
+consensus. Wakamiya and Murata~\cite{wm04} propose a scheme for data
+fusion in sensor networks where information collected by sensors is
+periodically propagated without any centralized control from the edge
+of a sensor network to a base station, using pulse-coupled
+synchronicity. Wokoma et al.~\cite{wl02} propose a weakly coupled
+adaptive gossip protocol for active networks. Each
+of these applications clearly demonstrates the utility of
+synchronicity as a primitive. However much of the prior work is
+evaluated only in simulation and does not consider real communication
+delay or loss.
+
+Wireless radios exhibit non-negligible and unpredictable delays due to
+channel coding, bit serialization, and (most importantly) backoff at
+the MAC layer \cite{tpsn,ftsp}. In traditional CSMA MAC schemes, a
+transmitter will delay a random interval before initiating
+transmission once the channel is clear. Additional random (typically
+exponential) backoffs are incurred during channel contention.  On the
+receiving end, jitter caused by interrupt overhead and packet
+deserialization leads to additional unpredictable delays.  Radio
+contention deeply impacts the firefly model.  Multiple nodes
+attempting to fire simultaneously will be unable to do so by the very
+nature of the CSMA algorithm. As nodes achieve tighter synchronicity,
+contention will become increasingly worse as many nodes attempt to
+transmit simultaneously. The goal of this paper is to address the
+limitations of current communication assumptions and realize a real
+implementation of firefly-inspired synchronicity in sensor networks.
+
+%% The simplicity of the pulse-coupled oscillator model and the parallel
+%% between the limited capabilities of fireflies and sensor nodes,
+%% provides an excellent motivation for investigating it as a
+%% synchronicity algorithm for wireless sensor nodes. 
+
+%% While their theoretical and simulation results are promising, their
+%% model inherently assumes that radio communication is instantaneous,
+%% and that nodes can instantaneously observe and react to neighbors
+%% firing. They also assume that an arbitrary number of nodes can
+%% transmit messages simultaneously when they fire.
+
+%% Our work represents the first
+%% implementation of firefly-inspired synchronicity on the MicaZ mote
+%% hardware, and demonstrates the ability of the model to achieve tight
+%% synchronicity given real radio and hardware limitations. 
+

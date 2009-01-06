@@ -1,0 +1,24 @@
+XAxis: Firing function constant: -labelalign center -labeldist 0.5
+YAxis: 90th percentile group spread (usec): -labelalign center -labeldist 0.5 -grid -setmax 65663.9960224158
+Key: right-(1.25*inch), top-(0.5*inch): : -keywidth 1.2 -keytitlealign right -textfont helvetica10 -fillcolor white -keyframe -elemwidth 0.1 -elemheight 0.1
+Options: -size 8x5 -labeldist 1.0 -textfont helvetica12 -labelfont helvetica12 -ticfont helvetica10 -keyframe 0 -valueangle 90 -valuefont helvetica10 -valuealign left -interpolation line -topmargin 0.2 -bottommargin 1.0 -rightmargin 0.2 -leftmargin 1.0 -plotspacing 5
+BeginCluster: FF 20: -xlabel 0.2
+  Bar: 8607.80000007253: 16 nodes: -inkey
+  Bar: 13282.5999999682: 64 nodes: -inkey
+  Bar: 16550.0000000975: 100 nodes: -inkey
+EndCluster
+BeginCluster: FF 50: -xlabel 0.2
+  Bar: 8521.00000001884: 16 nodes:
+  Bar: 13036.1999999877: 64 nodes:
+  Bar: 15800.249999927: 100 nodes:
+EndCluster
+BeginCluster: FF 100: -xlabel 0.2
+  Bar: 8817.39999998673: 16 nodes:
+  Bar: 12576.7500000506: 64 nodes:
+  Bar: 15799.5999999002: 100 nodes:
+EndCluster
+BeginCluster: FF 500: -xlabel 0.2
+  Bar: 9354.50000008586: 16 nodes:
+  Bar: 36837.2499999623: 64 nodes:
+  Bar: 41316.9999998975: 100 nodes:
+EndCluster

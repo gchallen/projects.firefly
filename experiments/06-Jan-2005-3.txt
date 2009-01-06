@@ -1,0 +1,27 @@
+# Header file for experiments scripts
+# Field description follows
+# DataDir FFConstant TopologyFile NumMotes  Time(sec) TopologyTag
+06-Jan-2005-3 10 topos/GRID6x6nss 36 1800 GRID
+06-Jan-2005-3 10 topos/GRID7x7.nss 49 1800 GRID
+06-Jan-2005-3 10 topos/GRID8x8.nss 64 1800 GRID
+06-Jan-2005-3 10 topos/GRID9x9.nss 81 1800 GRID
+06-Jan-2005-3 50 topos/GRID6x6nss 36 1800 GRID
+06-Jan-2005-3 50 topos/GRID7x7.nss 49 1800 GRID
+06-Jan-2005-3 50 topos/GRID8x8.nss 64 1800 GRID
+06-Jan-2005-3 50 topos/GRID9x9.nss 81 1800 GRID
+06-Jan-2005-3 100 topos/GRID6x6nss 36 1800 GRID
+06-Jan-2005-3 100 topos/GRID7x7.nss 49 1800 GRID
+06-Jan-2005-3 100 topos/GRID8x8.nss 64 1800 GRID
+06-Jan-2005-3 100 topos/GRID9x9.nss 81 1800 GRID
+06-Jan-2005-3 250 topos/GRID6x6nss 36 1800 GRID
+06-Jan-2005-3 250 topos/GRID7x7.nss 49 1800 GRID
+06-Jan-2005-3 250 topos/GRID8x8.nss 64 1800 GRID
+06-Jan-2005-3 250 topos/GRID9x9.nss 81 1800 GRID
+06-Jan-2005-3 500 topos/GRID6x6nss 36 1800 GRID
+06-Jan-2005-3 500 topos/GRID7x7.nss 49 1800 GRID
+06-Jan-2005-3 500 topos/GRID8x8.nss 64 1800 GRID
+06-Jan-2005-3 500 topos/GRID9x9.nss 81 1800 GRID
+06-Jan-2005-3 1000 topos/GRID6x6nss 36 1800 GRID
+06-Jan-2005-3 1000 topos/GRID7x7.nss 49 1800 GRID
+06-Jan-2005-3 1000 topos/GRID8x8.nss 64 1800 GRID
+06-Jan-2005-3 1000 topos/GRID9x9.nss 81 1800 GRID
